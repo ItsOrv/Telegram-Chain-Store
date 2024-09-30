@@ -1,11 +1,27 @@
 {
     "categories": [
         "\u062a\u0633\u062a \u06f3",
-        "\u062a\u0633\u062a \u06f4"
+        "\u062a\u0633\u062a \u06f4",
+        "\u062a\u0633\u062a\u06f7",
+        "\u062a\u0633\u062a"
     ],
     "users": {
         "6663338157": {
             "role": "admin",
+            "balance": 0,
+            "city": "",
+            "cart": {},
+            "orders": []
+        },
+        "1741510965": {
+            "role": "customer",
+            "balance": 0,
+            "city": "",
+            "cart": {},
+            "orders": []
+        },
+        "1281905482": {
+            "role": "agent",
             "balance": 0,
             "city": "",
             "cart": {},

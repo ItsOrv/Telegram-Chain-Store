@@ -17,17 +17,14 @@ def admin_menu(update, context):
         update.callback_query.message.reply_text(message, reply_markup=reply_markup)
         update.callback_query.answer()
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from utils.helpers import load_data, save_data
-
 def manage_categories(update, context):
     data = load_data()
     categories = data.get("categories", {})
     
-    # ابتدا دکمه افزودن دسته‌بندی ایجاد می‌کنیم
+    # دکمه افزودن دسته‌بندی ایجاد می‌شود
     keyboard = [[InlineKeyboardButton("افزودن دسته‌بندی", callback_data='add_category')]]
 
-    # برای هر دسته‌بندی، یک ردیف برای نام و یک ردیف برای دکمه‌های ادیت و حذف ایجاد می‌کنیم
+    # برای هر دسته‌بندی، دکمه‌های نام، ویرایش و حذف ایجاد می‌شود
     for category in categories:
         keyboard.append([InlineKeyboardButton(f"{category}", callback_data=f'view_category_{category}')])
         keyboard.append([
@@ -36,38 +33,50 @@ def manage_categories(update, context):
         ])
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    
-    # پیام شامل لیست دسته‌بندی‌ها
-    message = "مدیریت دسته بندی ها"
-    
+    message = "مدیریت دسته‌بندی‌ها"
+
     if update.callback_query:
         update.callback_query.message.reply_text(message, reply_markup=reply_markup)
         update.callback_query.answer()
 
-
-def handle_message(update, context):
-    if context.user_data.get('adding_category'):
-        new_category = update.message.text.strip()
-        data = load_data()
-        categories = data.get("categories", {})
-
-        if new_category in categories:
-            update.message.reply_text("این دسته‌بندی قبلاً وجود دارد.")
-        else:
-            categories[new_category] = []  # می‌توانید به هر دسته بندی محصولات مرتبط اضافه کنید
-            data["categories"] = categories
-            save_data(data)
-            update.message.reply_text(f"دسته‌بندی '{new_category}' با موفقیت اضافه شد.")
-        
-        context.user_data.clear()
-
-def edit_category(update, context, category):
+def add_category(update, context):
+    # درخواست نام دسته‌بندی جدید از کاربر
     if update.callback_query:
-        update.callback_query.message.reply_text(f"نام جدید دسته‌بندی '{category}' را وارد کنید:")
-        context.user_data['editing_category'] = category
+        update.callback_query.message.reply_text("نام دسته‌بندی جدید را وارد کنید:")
+        context.user_data['adding_category'] = True  # فعال کردن حالت افزودن دسته‌بندی
         update.callback_query.answer()
 
+def handle_new_category(update, context):
+    # این تابع زمانی فراخوانی می‌شود که کاربر نام دسته‌بندی جدید را وارد کند
+    if context.user_data.get('adding_category'):
+        new_category = update.message.text.strip()  # دریافت نام دسته‌بندی جدید
+        data = load_data()  # بارگذاری داده‌ها از فایل JSON
+
+        if 'categories' not in data:
+            data['categories'] = []
+
+        # بررسی اینکه دسته‌بندی وجود نداشته باشد
+        if new_category not in data['categories']:
+            data['categories'].append(new_category)
+            save_data(data)  # ذخیره دسته‌بندی جدید
+            update.message.reply_text(f"دسته‌بندی '{new_category}' با موفقیت اضافه شد.")
+        else:
+            update.message.reply_text(f"دسته‌بندی '{new_category}' قبلاً وجود دارد.")
+
+        context.user_data['adding_category'] = False  # غیرفعال کردن حالت افزودن
+    else:
+        update.message.reply_text("ابتدا از منوی مدیریت دسته‌بندی‌ها اقدام کنید.")
+
+def edit_category(update, context):
+    # دریافت دسته‌بندی برای ویرایش
+    query = update.callback_query
+    category = query.data.split('_')[-1]  # استخراج نام دسته‌بندی از callback_data
+    query.message.reply_text(f"نام جدید دسته‌بندی '{category}' را وارد کنید:")
+    context.user_data['editing_category'] = category
+    query.answer()
+
 def handle_edit_message(update, context):
+    # ویرایش نام دسته‌بندی
     if 'editing_category' in context.user_data:
         old_category = context.user_data['editing_category']
         new_category = update.message.text.strip()
@@ -77,27 +86,27 @@ def handle_edit_message(update, context):
         if new_category in categories:
             update.message.reply_text("این دسته‌بندی قبلاً وجود دارد.")
         else:
-            categories[new_category] = categories.pop(old_category)
-            data["categories"] = categories
+            categories[new_category] = categories.pop(old_category)  # تغییر نام دسته‌بندی
             save_data(data)
-            update.message.reply_text(f"دسته‌بندی '{old_category}' به '{new_category}' با موفقیت ویرایش شد.")
-        
-        context.user_data.clear()
+            update.message.reply_text(f"دسته‌بندی '{old_category}' به '{new_category}' تغییر یافت.")
 
-def delete_category(update, context, category):
-    if update.callback_query:
-        data = load_data()
-        categories = data.get("categories", {})
-        
-        if category in categories:
-            del categories[category]
-            data["categories"] = categories
-            save_data(data)
-            update.callback_query.message.reply_text(f"دسته‌بندی '{category}' با موفقیت حذف شد.")
-        else:
-            update.callback_query.message.reply_text("دسته‌بندی مورد نظر وجود ندارد.")
+        context.user_data.clear()  # پاک کردن وضعیت کاربر
 
-        update.callback_query.answer()
+def delete_category(update, context):
+    # حذف دسته‌بندی
+    query = update.callback_query
+    category = query.data.split('_')[-1]  # استخراج نام دسته‌بندی از callback_data
+    data = load_data()
+    categories = data.get("categories", {})
+
+    if category in categories:
+        del categories[category]
+        save_data(data)  # ذخیره تغییرات
+        query.message.reply_text(f"دسته‌بندی '{category}' حذف شد.")
+    else:
+        query.message.reply_text("دسته‌بندی وجود ندارد.")
+    
+    query.answer()
 
 def list_agents(update, context):
     data = load_data()
@@ -113,34 +122,3 @@ def list_agents(update, context):
     elif update.callback_query:
         update.callback_query.message.reply_text(message)
         update.callback_query.answer()
-
-
-def add_category(update, context):
-    # در این مرحله درخواست نام دسته‌بندی از کاربر را انجام می‌دهیم
-    if update.callback_query:
-        update.callback_query.message.reply_text("نام دسته‌بندی جدید را وارد کنید:")
-        context.user_data['adding_category'] = True
-        update.callback_query.answer()
-
-def handle_new_category(update, context):
-    new_category = update.message.text.strip()
-
-    if new_category:
-        # Load the existing data from JSON
-        data = load_data()
-
-        # Check if 'categories' is a list, if not, initialize it as a list
-        if not isinstance(data.get('categories'), list):
-            data['categories'] = []
-
-        # Add the new category to the list
-        data['categories'].append(new_category)
-
-        # Save the updated data back to the JSON file
-        save_data(data)
-
-        # Send a confirmation message to the user
-        update.message.reply_text(f"دسته‌بندی '{new_category}' با موفقیت اضافه شد.")
-    
-    # Clear the adding_category flag
-    context.user_data['adding_category'] = False

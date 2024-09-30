@@ -6,8 +6,8 @@ def customer_menu(update, context):
     keyboard = [
         [InlineKeyboardButton("خرید محصول", callback_data='buy_product')],
         [InlineKeyboardButton("سبد خرید من", callback_data='show_cart')],
-        [InlineKeyboardButton("خریدهای قبلی", callback_data='previous_orders')],
         [InlineKeyboardButton("شارژ حساب", callback_data='charge_account')],
+        [InlineKeyboardButton("خریدهای قبلی", callback_data='previous_orders')],
         [InlineKeyboardButton("ارتباط با مدیر", callback_data='contact_admin')],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -18,17 +18,73 @@ def customer_menu(update, context):
         update.callback_query.message.reply_text("به ربات خانه فروش خوش آمدید", reply_markup=reply_markup)
         update.callback_query.answer()
 
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from utils.helpers import load_data, save_data
+
 def buy_product(update, context):
+    # مرحله 1: نمایش لیست استان‌ها
     data = load_data()
-    cities = list(data["agents"].keys())
-    keyboard = [[InlineKeyboardButton(city, callback_data=f"city_{city}")] for city in cities]
+    provinces = set([agent_info['province'] for agent_info in data["agents"].values()])
+    keyboard = [[InlineKeyboardButton(province, callback_data=f"province_{province}")] for province in provinces]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     if update.message:
-        update.message.reply_text("شهر خود را انتخاب کنید.", reply_markup=reply_markup)
+        update.message.reply_text("استان خود را انتخاب کنید.", reply_markup=reply_markup)
     elif update.callback_query:
-        update.callback_query.message.reply_text("شهر خود را انتخاب کنید.", reply_markup=reply_markup)
+        update.callback_query.message.reply_text("استان خود را انتخاب کنید.", reply_markup=reply_markup)
         update.callback_query.answer()
+
+def handle_province_selection(update, context):
+    # مرحله 2: پس از انتخاب استان، نمایش لیست شهرها
+    data = load_data()
+    query = update.callback_query
+    province = query.data.split("_")[1]  # استخراج نام استان از callback_data
+    cities = [city for city, agent_info in data["agents"].items() if agent_info["province"] == province]
+    
+    if cities:
+        keyboard = [[InlineKeyboardButton(city, callback_data=f"city_{city}")] for city in cities]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        query.message.reply_text(f"شهرهای استان {province} را انتخاب کنید:", reply_markup=reply_markup)
+    else:
+        query.message.reply_text(f"در استان {province} شهری ثبت نشده است.")
+    
+    query.answer()
+
+def handle_city_selection(update, context):
+    # مرحله 3: پس از انتخاب شهر، نمایش لیست محصولات
+    data = load_data()
+    query = update.callback_query
+    city = query.data.split("_")[1]  # استخراج نام شهر از callback_data
+
+    # استخراج محصولات نماینده‌ها در شهر انتخاب‌شده
+    agent_info = data["agents"].get(city, {})
+    products = agent_info.get("products", [])
+    
+    if products:
+        keyboard = [[InlineKeyboardButton(product, callback_data=f"product_{product}")] for product in products]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        query.message.reply_text(f"محصولات شهر {city}:", reply_markup=reply_markup)
+    else:
+        query.message.reply_text(f"در شهر {city} محصولی موجود نیست.")
+    
+    query.answer()
+
+def handle_product_selection(update, context):
+    # مرحله 4: نمایش اطلاعات محصول انتخابی
+    query = update.callback_query
+    product = query.data.split("_")[1]  # استخراج نام محصول از callback_data
+    
+    # فرض کنید اطلاعات دقیق محصول در فایل JSON ذخیره شده باشد
+    data = load_data()
+    product_info = next((p for agent in data['agents'].values() for p in agent['products'] if p == product), None)
+    
+    if product_info:
+        query.message.reply_text(f"اطلاعات محصول {product}:\n{product_info}")
+    else:
+        query.message.reply_text(f"محصول {product} پیدا نشد.")
+    
+    query.answer()
+
 
 def show_cart(update, context):
     user_id = update.effective_user.id
