@@ -12,6 +12,9 @@ def main():
     # Admin handlers
     dp.add_handler(CallbackQueryHandler(admin.list_agents, pattern='list_agents'))
     dp.add_handler(CallbackQueryHandler(customer.contact_admin, pattern='contact_admin'))
+    dp.add_handler(CallbackQueryHandler(admin.manage_categories, pattern='manage_categories'))
+    dp.add_handler(CallbackQueryHandler(admin.add_category, pattern='add_category'))
+    # dp.add_handler(CallbackQueryHandler(admin., pattern=''))
 
     # Agent handlers
     dp.add_handler(CallbackQueryHandler(agent.add_product, pattern='add_product'))

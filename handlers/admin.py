@@ -17,23 +17,33 @@ def admin_menu(update, context):
         update.callback_query.message.reply_text(message, reply_markup=reply_markup)
         update.callback_query.answer()
 
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from utils.helpers import load_data, save_data
+
 def manage_categories(update, context):
     data = load_data()
     categories = data.get("categories", {})
+    
+    # ابتدا دکمه افزودن دسته‌بندی ایجاد می‌کنیم
     keyboard = [[InlineKeyboardButton("افزودن دسته‌بندی", callback_data='add_category')]]
 
+    # برای هر دسته‌بندی، یک ردیف برای نام و یک ردیف برای دکمه‌های ادیت و حذف ایجاد می‌کنیم
     for category in categories:
+        keyboard.append([InlineKeyboardButton(f"{category}", callback_data=f'view_category_{category}')])
         keyboard.append([
-            InlineKeyboardButton(f"ویرایش {category}", callback_data=f'edit_category_{category}'),
-            InlineKeyboardButton(f"حذف {category}", callback_data=f'delete_category_{category}')
+            InlineKeyboardButton("ویرایش", callback_data=f'edit_category_{category}'),
+            InlineKeyboardButton("حذف", callback_data=f'delete_category_{category}')
         ])
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    message = "دسته‌بندی‌های موجود:\n" + "\n".join(categories) if categories else "هیچ دسته‌بندی وجود ندارد."
+    
+    # پیام شامل لیست دسته‌بندی‌ها
+    message = "مدیریت دسته بندی ها"
     
     if update.callback_query:
         update.callback_query.message.reply_text(message, reply_markup=reply_markup)
         update.callback_query.answer()
+
 
 def add_category(update, context):
     if update.callback_query:
