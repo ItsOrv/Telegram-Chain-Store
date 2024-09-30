@@ -45,12 +45,6 @@ def manage_categories(update, context):
         update.callback_query.answer()
 
 
-def add_category(update, context):
-    if update.callback_query:
-        update.callback_query.message.reply_text("نام دسته‌بندی جدید را وارد کنید:")
-        context.user_data['adding_category'] = True
-        update.callback_query.answer()
-
 def handle_message(update, context):
     if context.user_data.get('adding_category'):
         new_category = update.message.text.strip()
@@ -119,3 +113,34 @@ def list_agents(update, context):
     elif update.callback_query:
         update.callback_query.message.reply_text(message)
         update.callback_query.answer()
+
+
+def add_category(update, context):
+    # در این مرحله درخواست نام دسته‌بندی از کاربر را انجام می‌دهیم
+    if update.callback_query:
+        update.callback_query.message.reply_text("نام دسته‌بندی جدید را وارد کنید:")
+        context.user_data['adding_category'] = True
+        update.callback_query.answer()
+
+def handle_new_category(update, context):
+    new_category = update.message.text.strip()
+
+    if new_category:
+        # Load the existing data from JSON
+        data = load_data()
+
+        # Check if 'categories' is a list, if not, initialize it as a list
+        if not isinstance(data.get('categories'), list):
+            data['categories'] = []
+
+        # Add the new category to the list
+        data['categories'].append(new_category)
+
+        # Save the updated data back to the JSON file
+        save_data(data)
+
+        # Send a confirmation message to the user
+        update.message.reply_text(f"دسته‌بندی '{new_category}' با موفقیت اضافه شد.")
+    
+    # Clear the adding_category flag
+    context.user_data['adding_category'] = False

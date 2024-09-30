@@ -1,6 +1,7 @@
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, Filters
 from config import TOKEN
 from handlers import admin, agent, customer, common
+from handlers.admin import handle_new_category  # اضافه کردن ایمپورت تابع
 
 def main():
     updater = Updater(TOKEN, use_context=True)
@@ -11,10 +12,7 @@ def main():
 
     # Admin handlers
     dp.add_handler(CallbackQueryHandler(admin.list_agents, pattern='list_agents'))
-    dp.add_handler(CallbackQueryHandler(customer.contact_admin, pattern='contact_admin'))
-    dp.add_handler(CallbackQueryHandler(admin.manage_categories, pattern='manage_categories'))
     dp.add_handler(CallbackQueryHandler(admin.add_category, pattern='add_category'))
-    # dp.add_handler(CallbackQueryHandler(admin., pattern=''))
 
     # Agent handlers
     dp.add_handler(CallbackQueryHandler(agent.add_product, pattern='add_product'))
@@ -28,9 +26,8 @@ def main():
     dp.add_handler(CallbackQueryHandler(customer.previous_orders, pattern='previous_orders'))
     dp.add_handler(CallbackQueryHandler(customer.charge_account, pattern='charge_account'))
 
-    # Text message handlers
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, agent.handle_message))
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, customer.handle_message))
+    # Text message handlers (اینجا تابع handle_new_category را اضافه می‌کنیم)
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_new_category))
 
     # Start the bot
     updater.start_polling()
