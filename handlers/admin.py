@@ -6,7 +6,7 @@ def admin_menu(update, context):
     keyboard = [
         [InlineKeyboardButton("مدیریت دسته‌بندی‌ها", callback_data='manage_categories')],
         [InlineKeyboardButton("لیست نماینده‌ها", callback_data='list_agents')],
-        [InlineKeyboardButton("مدیریت محصولات", callback_data='manage_products')],
+        [InlineKeyboardButton("مدیریت محصولات", callback_data='admin_manage_products')],
         [InlineKeyboardButton("گزارش‌گیری", callback_data='reports')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -106,21 +106,197 @@ def delete_category(update, context):
     query.answer()
 
 def list_agents(update, context):
-    """لیست نماینده‌ها و محصولات آن‌ها را نمایش می‌دهد."""
+    """لیست نماینده‌ها و محصولات آن‌ها را نمایش می‌دهد، هر محصول دارای شهر مجزا است."""
     data = load_data()
     agents = data.get("agents", {})
-    message = "لیست نماینده‌ها:\n"
+    message = "لیست نماینده‌ها و محصولات آن‌ها:\n\n"
 
     if agents:
         for city, agent_info in agents.items():
-            agent = data["users"].get(str(agent_info["agent_id"]))
-            product_count = len(agent_info.get('products', []))
-            message += f"{city}: {agent['name']} - محصولات: {product_count}\n"
+            agent_id = str(agent_info["agent_id"])
+            agent = data["users"].get(agent_id)
+
+            if agent:
+                agent_name = agent.get('name', 'بدون نام')
+                products = agent_info.get('products', {})
+                product_count = len(products)
+
+                # نمایش اطلاعات کلی نماینده
+                message += f"📍 شهر نماینده: {city}\n"
+                message += f"👤 نماینده: {agent_name} - تعداد محصولات: {product_count}\n"
+
+                if product_count > 0:
+                    message += "📦 محصولات:\n"
+                    for product_name, product_info in products.items():
+                        price = product_info.get('price', 'بدون قیمت')
+                        stock = product_info.get('stock', 'بدون موجودی')
+                        product_city = product_info.get('location', {}).get('city', 'بدون شهر')  # شهر محصول
+                        
+                        message += (
+                            f"    🔹 {product_name}: قیمت {price} تومان - "
+                            f"موجودی: {stock} - شهر: {product_city}\n"
+                        )
+                else:
+                    message += "    ⚠️ این نماینده هنوز هیچ محصولی اضافه نکرده است.\n"
+            else:
+                message += f"⚠️ نماینده با ID {agent_id} یافت نشد.\n"
     else:
         message = "هیچ نماینده‌ای وجود ندارد."
 
+    # ارسال پیام به کاربر
     if update.message:
         update.message.reply_text(message)
     elif update.callback_query:
         update.callback_query.message.reply_text(message)
         update.callback_query.answer()
+
+    # اضافه کردن دکمه افزودن نماینده
+    keyboard = [
+        [InlineKeyboardButton("افزودن نماینده جدید", callback_data='add_agent')],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    if update.message:
+        update.message.reply_text(message, reply_markup=reply_markup)
+    elif update.callback_query:
+        update.callback_query.message.reply_text(message, reply_markup=reply_markup)
+        update.callback_query.answer()
+
+def add_agent_start(update, context):
+    """شروع فرآیند افزودن نماینده با درخواست ID عددی نماینده جدید."""
+    print('test add agent')
+    update.callback_query.message.reply_text("لطفاً ID عددی نماینده جدید را وارد کنید:")
+    update.callback_query.answer()
+
+    # ذخیره مرحله برای دریافت ID نماینده
+    context.user_data['adding_agent'] = True
+
+def handle_agent_id_input(update, context):
+    """دریافت و ثبت ID نماینده جدید و تغییر نقش کاربر به agent."""
+    if context.user_data.get('adding_agent'):
+        agent_id = update.message.text
+        if agent_id.isdigit():
+            agent_id = int(agent_id)
+            context.user_data['adding_agent'] = False  # پایان فرآیند
+
+            # افزودن نماینده جدید به لیست agents
+            data = load_data()
+            if str(agent_id) in data["users"]:  # اطمینان از اینکه کاربر وجود دارد
+                user = data["users"][str(agent_id)]
+                city = user.get('city', 'بدون شهر')
+
+                if city not in data["agents"]:
+                    # تغییر نقش کاربر به agent
+                    data["users"][str(agent_id)]["role"] = "agent"
+                    
+                    # افزودن نماینده به لیست agents
+                    data["agents"][city] = {"agent_id": agent_id, "products": {}}
+                    save_data(data)
+
+                    update.message.reply_text(f"نماینده با ایدی عددی {agent_id} اضافه شد و نقش کاربر به 'agent' تغییر یافت.")
+                else:
+                    update.message.reply_text(f"در این شهر نماینده‌ای وجود دارد.")
+            else:
+                update.message.reply_text("کاربری با این ID یافت نشد.")
+        else:
+            update.message.reply_text("لطفاً یک ID عددی معتبر وارد کنید.")
+
+
+
+
+
+
+
+# admin prodict shits
+
+def admin_manage_products(update, context):
+    print("test admin product manage")
+    """نمایش لیست محصولات برای مدیریت توسط ادمین."""
+    data = load_data()
+    agents = data.get("agents", {})
+    message = "🔧 مدیریت محصولات:\n\n"
+
+    if agents:
+        for city, agent_info in agents.items():
+            agent_id = str(agent_info["agent_id"])
+            agent = data["users"].get(agent_id)
+
+            if agent:
+                agent_name = agent.get('name', 'بدون نام')
+                products = agent_info.get('products', {})
+
+                if products:
+                    for product_name, product_info in products.items():
+                        price = product_info.get('price', 'بدون قیمت')
+                        stock = product_info.get('stock', 'بدون موجودی')
+                        product_city = product_info.get('location', {}).get('city', 'بدون شهر')
+
+                        # پیام محصول به همراه اطلاعات کامل
+                        product_message = (
+                            f"📦 نام محصول: {product_name}\n"
+                            f"💰 قیمت: {price} تومان\n"
+                            f"📍 شهر: {product_city}\n"
+                            f"🔢 موجودی: {stock}\n"
+                            f"👤 نماینده: {agent_name} (شهر نماینده: {city})\n"
+                        )
+
+                        # ایجاد دکمه‌های شیشه‌ای برای حذف و ویرایش
+                        keyboard = [
+                            [
+                                InlineKeyboardButton("✏️ ویرایش", callback_data=f"admin_edit_product_{agent_id}_{product_name}"),
+                                InlineKeyboardButton("❌ حذف", callback_data=f"admin_delete_product_{agent_id}_{product_name}")
+                            ]
+                        ]
+                        reply_markup = InlineKeyboardMarkup(keyboard)
+
+                        # ارسال پیام هر محصول
+                        if update.message:
+                            update.message.reply_text(product_message, reply_markup=reply_markup)
+                        elif update.callback_query:
+                            update.callback_query.message.reply_text(product_message, reply_markup=reply_markup)
+                            update.callback_query.answer()
+                else:
+                    message += f"نماینده {agent_name} (شهر: {city}) هیچ محصولی ندارد.\n"
+    else:
+        message = "هیچ نماینده‌ای ثبت نشده است."
+
+    if message.strip():  # در صورت وجود نماینده‌هایی که محصول ندارند
+        if update.message:
+            update.message.reply_text(message)
+        elif update.callback_query:
+            update.callback_query.message.reply_text(message)
+            update.callback_query.answer()
+
+
+def admin_delete_product(update, context):
+    """حذف محصول توسط ادمین."""
+    query_data = update.callback_query.data.split('_')
+    agent_id = query_data[3]
+    product_name = '_'.join(query_data[4:])  # در صورتی که نام محصول شامل چند کلمه باشد
+
+    data = load_data()
+    agent_info = data["agents"].get(agent_id)
+
+    if agent_info and product_name in agent_info['products']:
+        del agent_info['products'][product_name]  # حذف محصول
+        save_data(data)
+        update.callback_query.message.reply_text(f"محصول {product_name} با موفقیت حذف شد.")
+    else:
+        update.callback_query.message.reply_text("محصول یافت نشد.")
+
+    update.callback_query.answer()
+
+
+def admin_edit_product(update, context):
+    """ویرایش محصول توسط ادمین."""
+    query_data = update.callback_query.data.split('_')
+    agent_id = query_data[3]
+    product_name = '_'.join(query_data[4:])  # در صورتی که نام محصول شامل چند کلمه باشد
+
+    context.user_data['editing_product'] = {
+        'agent_id': agent_id,
+        'product_name': product_name
+    }
+
+    update.callback_query.message.reply_text(f"برای ویرایش محصول {product_name}، اطلاعات جدید را وارد کنید.")
+    update.callback_query.answer()

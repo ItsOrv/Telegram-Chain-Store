@@ -1,6 +1,6 @@
 {
     "categories": [
-        "تست"
+        "کیر"
     ],
     "users": {
         "6663338157": {
@@ -25,6 +25,19 @@
             "orders": []
         }
     },
-    "agents": {},
-    "products": {}
+    "agents": {
+        "kkkkk": {
+            "agent_id": 1281905482,
+            "products": {}
+        },
+        "1281905482": {
+            "products": [
+                2,
+                3,
+                4
+            ]
+        }
+    },
+    "products": {
+    }
 }

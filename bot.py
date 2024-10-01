@@ -14,6 +14,14 @@ def main():
     dp.add_handler(CallbackQueryHandler(admin.manage_categories, pattern='manage_categories'))  # مدیریت دسته‌بندی‌ها
     dp.add_handler(CallbackQueryHandler(admin.delete_category, pattern='delete_category'))  # حذف دسته‌بندی
     dp.add_handler(CallbackQueryHandler(admin.list_agents, pattern='list_agents'))  # لیست نمایندگان
+    dp.add_handler(CallbackQueryHandler(admin.add_agent_start, pattern='add_agent'))
+    dp.add_handler(CallbackQueryHandler(admin.admin_manage_products, pattern='admin_manage_products'))
+    dp.add_handler(CallbackQueryHandler(admin.edit_category, pattern='edit_category'))
+    #dp.add_handler(CallbackQueryHandler(admin., pattern=''))
+
+    dp.add_handler(CallbackQueryHandler(admin.admin_delete_product, pattern='admin_delete_product'))
+    dp.add_handler(CallbackQueryHandler(admin.admin_edit_product, pattern='admin_edit_product'))
+
     #dp.add_handler(CallbackQueryHandler(admin.view_orders, pattern='view_orders'))  # نمایش سفارشات
     # edit_category
 
@@ -31,11 +39,11 @@ def main():
     dp.add_handler(CallbackQueryHandler(customer.charge_account, pattern='charge_account'))  # شارژ حساب
 
     # Text message handlers برای متن‌های وارد شده توسط کاربر
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, agent.handle_new_product))  # مدیریت متن مربوط به اضافه کردن محصول
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, admin.handle_new_category))  # مدیریت متن مربوط به اضافه کردن دسته‌بندی
+    # dp.add_handler(MessageHandler(Filters.text & ~Filters.command, agent.handle_new_product))  # مدیریت متن مربوط به اضافه کردن محصول
+    # dp.add_handler(MessageHandler(Filters.text & ~Filters.command, admin.handle_new_category))  # مدیریت متن مربوط به اضافه کردن دسته‌بندی
     # handle_edit_message
-
-    #dp.add_handler(MessageHandler(Filters.text & ~Filters.command & Filters.regex(r'^\d+$'), customer.handle_charge_account))  # مدیریت شارژ حساب (فقط اعداد مثبت)
+    # dp.add_handler(MessageHandler(Filters.text & ~Filters.command & Filters.regex(r'^\d+$'), customer.handle_charge_account))  # مدیریت شارژ حساب (فقط اعداد مثبت)
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, common.handle_message))
 
     # Start the bot
     updater.start_polling()
@@ -43,3 +51,9 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+# دکمه لیست نماینده ها 
+# بررسی دوباره ادیت محصولات ادمین
+# به محصولات متغیر دسته بندی هم اضافه شود
