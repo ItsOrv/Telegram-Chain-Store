@@ -1,20 +1,22 @@
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, Filters
 from config import TOKEN
 from handlers import admin, agent, customer, common
-from handlers.admin import handle_new_category  # اضافه کردن ایمپورت تابع
-from handlers.agent import handle_new_product  # اضافه کردن هندلر متن محصول
 
 def main():
     updater = Updater(TOKEN, use_context=True)
     dp = updater.dispatcher
 
     # Command handlers
-    dp.add_handler(CommandHandler("start", common.start))
+    dp.add_handler(CommandHandler("start", common.start))  # شروع
 
     # Admin handlers
-    dp.add_handler(CallbackQueryHandler(admin.list_agents, pattern='list_agents'))
-    dp.add_handler(CallbackQueryHandler(admin.add_category_start, pattern='add_category'))  # شروع اضافه کردن دسته‌بندی
+    dp.add_handler(CallbackQueryHandler(admin.add_category, pattern='add_category'))  # اضافه کردن دسته‌بندی
     dp.add_handler(CallbackQueryHandler(admin.manage_categories, pattern='manage_categories'))  # مدیریت دسته‌بندی‌ها
+    dp.add_handler(CallbackQueryHandler(admin.delete_category, pattern='delete_category'))  # حذف دسته‌بندی
+    dp.add_handler(CallbackQueryHandler(admin.list_agents, pattern='list_agents'))  # لیست نمایندگان
+    #dp.add_handler(CallbackQueryHandler(admin.view_orders, pattern='view_orders'))  # نمایش سفارشات
+    # edit_category
+
 
     # Agent handlers
     dp.add_handler(CallbackQueryHandler(agent.add_product, pattern='add_product'))  # اضافه کردن محصول
@@ -29,8 +31,11 @@ def main():
     dp.add_handler(CallbackQueryHandler(customer.charge_account, pattern='charge_account'))  # شارژ حساب
 
     # Text message handlers برای متن‌های وارد شده توسط کاربر
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command & Filters.regex(r'^\d+$'), handle_new_product))  # مدیریت متن مربوط به اضافه کردن محصول
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command & Filters.regex(r'^[a-zA-Z]+$'), handle_new_category))  # مدیریت متن مربوط به اضافه کردن دسته‌بندی
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, agent.handle_new_product))  # مدیریت متن مربوط به اضافه کردن محصول
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, admin.handle_new_category))  # مدیریت متن مربوط به اضافه کردن دسته‌بندی
+    # handle_edit_message
+
+    #dp.add_handler(MessageHandler(Filters.text & ~Filters.command & Filters.regex(r'^\d+$'), customer.handle_charge_account))  # مدیریت شارژ حساب (فقط اعداد مثبت)
 
     # Start the bot
     updater.start_polling()
