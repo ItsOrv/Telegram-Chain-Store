@@ -97,54 +97,17 @@ def find_next_product_id(data):
 
 
 def handle_city_selection(update, context):
-    """مدیریت انتخاب شهر توسط نماینده و ذخیره محصول با شماره محصول جدید."""
+    """مدیریت انتخاب شهر توسط نماینده و هدایت به ذخیره محصول."""
     city = update.callback_query.data.split('_')[1]
     context.user_data['current_city'] = city  # ذخیره شهر انتخاب شده
 
-    # گرفتن اطلاعات محصول از user_data
-    product_name = context.user_data.get('product_name')
-    product_description = context.user_data.get('product_description')
-    product_price = context.user_data.get('product_price')
-    province = context.user_data.get('current_province')
-    agent_id = str(update.effective_user.id)
-
-    # بارگیری اطلاعات از فایل JSON
-    data = load_data()
-
-    # یافتن اولین شماره خالی برای محصول
-    product_id = find_next_product_id(data)
-
-    # اضافه کردن محصول به لیست محصولات
-    if 'products' not in data:
-        data['products'] = {}
-    data['products'][product_id] = {
-        'name': product_name,
-        'description': product_description,
-        'price': product_price,
-        'province': province,
-        'city': city,
-        'agent_id': agent_id
-    }
-
-    # اضافه کردن شماره محصول به لیست محصولات نماینده در بخش agents
-    if 'agents' not in data:
-        data['agents'] = {}
-    if agent_id not in data['agents']:
-        data['agents'][agent_id] = {'products': []}
-
-    # اطمینان حاصل کردن از اینکه 'products' در بخش agent یک لیست است
-    if not isinstance(data['agents'][agent_id]['products'], list):
-        data['agents'][agent_id]['products'] = []
-
-    # ذخیره شماره محصول در بخش agents (فقط شماره محصول اضافه شود)
-    data['agents'][agent_id]['products'].append(product_id)
-
-    # ذخیره داده‌ها در فایل JSON
-    save_data(data)
+    # هدایت به تابع ذخیره محصول پس از انتخاب شهر
+    save_new_product(update, context)
 
     # پاسخ به نماینده
-    update.callback_query.message.reply_text(f"شهر {city} انتخاب شد و محصول با شماره {product_id} ثبت شد.")
     update.callback_query.answer()
+
+
 
 
 
@@ -173,62 +136,79 @@ def process_product_details(update, context):
         price_text = update.message.text
         if price_text.isdigit():
             context.user_data['product_price'] = int(price_text)
-            show_provinces(update, context)  # درخواست انتخاب استان پس از وارد کردن قیمت
+            update.message.reply_text("موجودی محصول را وارد کنید.")
         else:
             update.message.reply_text("لطفاً یک قیمت معتبر وارد کنید.")
+    elif 'product_stock' not in context.user_data:
+        stock_text = update.message.text
+        if stock_text.isdigit():
+            context.user_data['product_stock'] = int(stock_text)
+            show_provinces(update, context)  # درخواست انتخاب استان پس از وارد کردن موجودی
+        else:
+            update.message.reply_text("لطفاً یک عدد معتبر برای موجودی وارد کنید.")
     elif 'current_city' in context.user_data:
         save_new_product(update, context)
 
 def save_new_product(update, context):
     """ذخیره محصول جدید در پایگاه داده."""
+    # بارگیری داده‌ها از فایل JSON
     data = load_data()
+
+    # گرفتن اطلاعات از context.user_data
+    product_name = context.user_data.get('product_name')
+    product_description = context.user_data.get('product_description')
+    product_price = context.user_data.get('product_price')
+    product_stock = context.user_data.get('product_stock')  # موجودی محصول
     city = context.user_data.get('current_city')
     province = context.user_data.get('current_province')
     agent_id = str(update.effective_user.id)
 
-    # اطلاعات محصول از context
-    new_product = {
-        "name": context.user_data.get('product_name'),
-        "description": context.user_data.get('product_description'),
-        "price": context.user_data.get('product_price'),
-        "province": province,
-        "city": city,
-        "agent_id": agent_id
+    # یافتن اولین شماره خالی برای محصول
+    product_id = find_next_product_id(data)
+
+    # ایجاد ورودی جدید برای محصول در بخش products
+    if 'products' not in data:
+        data['products'] = {}
+    data['products'][product_id] = {
+        'name': product_name,
+        'description': product_description,
+        'price': product_price,
+        'stock': product_stock,
+        'sold': 0,  # تعداد فروخته شده (ابتدایی 0)
+        'province': province,
+        'city': city,
+        'agent_id': agent_id
     }
 
-    # اطمینان از وجود بخش agents و افزودن محصول به آن
+    # اطمینان از وجود بخش agents و افزودن شماره محصول به آن
     if 'agents' not in data:
         data['agents'] = {}
     if agent_id not in data['agents']:
         data['agents'][agent_id] = {'products': []}
 
-    # پیدا کردن شماره محصول بعدی
-    product_id = find_next_product_id(data)
-
-    # افزودن محصول به بخش products
-    if 'products' not in data:
-        data['products'] = {}
-    data['products'][product_id] = new_product
-
-    # افزودن شماره محصول به لیست محصولات نماینده
+    # افزودن شماره محصول به لیست محصولات نماینده در بخش agents
     data['agents'][agent_id]['products'].append(product_id)
 
     # ذخیره داده‌ها در فایل JSON
     save_data(data)
 
-    # ارسال پیام به نماینده برای تأیید
+    # ارسال پیام به نماینده برای تأیید (اطلاعات محصول از data['products'][product_id])
     product_details = (
         f"محصول شما با موفقیت اضافه شد:\n"
-        f"نام: {new_product['name']}\n"
-        f"توضیحات: {new_product['description']}\n"
-        f"قیمت: {new_product['price']} تومان\n"
-        f"شهر: {new_product['city']}\n"
+        f"نام: {data['products'][product_id]['name']}\n"
+        f"توضیحات: {data['products'][product_id]['description']}\n"
+        f"قیمت: {data['products'][product_id]['price']} تومان\n"
+        f"موجودی: {data['products'][product_id]['stock']} عدد\n"
+        f"تعداد فروخته شده: {data['products'][product_id]['sold']}\n"
+        f"شهر: {data['products'][product_id]['city']}\n"
     )
-    update.message.reply_text(product_details)
+    update.callback_query.message.reply_text(product_details)
 
     # پاک‌سازی context.user_data پس از افزودن محصول
     context.user_data.clear()
-# تعریف تابع handle_new_product به عنوان alias برای handle_message
+
+
+
 handle_new_product = handle_message
 
 
