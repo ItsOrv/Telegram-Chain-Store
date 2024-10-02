@@ -171,39 +171,65 @@ def add_agent_start(update, context):
     # ذخیره مرحله برای دریافت ID نماینده
     context.user_data['adding_agent'] = True
 
-def handle_agent_id_input(update, context):
-    """دریافت و ثبت ID نماینده جدید و تغییر نقش کاربر به agent."""
-    if context.user_data.get('adding_agent'):
-        agent_id = update.message.text
-        if agent_id.isdigit():
-            agent_id = int(agent_id)
-            context.user_data['adding_agent'] = False  # پایان فرآیند
+def list_agents(update, context):
+    """لیست نماینده‌ها و محصولات آن‌ها را نمایش می‌دهد، هر محصول دارای شهر مجزا است."""
+    data = load_data()
+    agents = data.get("agents", {})
+    message = "لیست نماینده‌ها و محصولات آن‌ها:\n\n"
 
-            # افزودن نماینده جدید به لیست agents
-            data = load_data()
-            if str(agent_id) in data["users"]:  # اطمینان از اینکه کاربر وجود دارد
-                user = data["users"][str(agent_id)]
-                city = user.get('city', 'بدون شهر')
+    if agents:
+        for agent_id, agent_info in agents.items():
+            agent = data["users"].get(agent_id)
+            if agent and agent.get('role') == 'agent':
+                agent_name = agent.get('name', 'بدون نام')
+                product_ids = agent_info.get('products', [])
+                product_count = len(product_ids)
 
-                if city not in data["agents"]:
-                    # تغییر نقش کاربر به agent
-                    data["users"][str(agent_id)]["role"] = "agent"
-                    
-                    # افزودن نماینده به لیست agents
-                    data["agents"][city] = {"agent_id": agent_id, "products": {}}
-                    save_data(data)
+                # نمایش اطلاعات کلی نماینده
+                message += f"👤 نماینده: {agent_name} (ID: {agent_id}) - تعداد محصولات: {product_count}\n"
 
-                    update.message.reply_text(f"نماینده با ایدی عددی {agent_id} اضافه شد و نقش کاربر به 'agent' تغییر یافت.")
+                if product_count > 0:
+                    message += "📦 محصولات:\n"
+                    for product_id in product_ids:
+                        product_info = data["products"].get(str(product_id))
+                        if product_info:
+                            product_name = product_info.get('name', 'بدون نام')
+                            price = product_info.get('price', 'بدون قیمت')
+                            stock = product_info.get('stock', 'بدون موجودی')
+                            product_city = product_info.get('city', 'بدون شهر')
+                            category = product_info.get('category', 'بدون دسته‌بندی')
+                            
+                            message += (
+                                f"    🔹 {product_name}: قیمت {price} تومان - "
+                                f"موجودی: {stock} - شهر: {product_city} - دسته‌بندی: {category}\n"
+                            )
+                        else:
+                            message += f"    ⚠️ محصول با شناسه {product_id} یافت نشد.\n"
                 else:
-                    update.message.reply_text(f"در این شهر نماینده‌ای وجود دارد.")
+                    message += "    ⚠️ این نماینده هنوز هیچ محصولی اضافه نکرده است.\n"
             else:
-                update.message.reply_text("کاربری با این ID یافت نشد.")
-        else:
-            update.message.reply_text("لطفاً یک ID عددی معتبر وارد کنید.")
+                message += f"⚠️ نماینده با ID {agent_id} یافت نشد.\n"
+    else:
+        message = "هیچ نماینده‌ای وجود ندارد."
 
+    # ارسال پیام به کاربر
+    if update.message:
+        update.message.reply_text(message)
+    elif update.callback_query:
+        update.callback_query.message.reply_text(message)
+        update.callback_query.answer()
 
+    # اضافه کردن دکمه افزودن نماینده
+    keyboard = [
+        [InlineKeyboardButton("افزودن نماینده جدید", callback_data='add_agent')],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
-
+    if update.message:
+        update.message.reply_text(message, reply_markup=reply_markup)
+    elif update.callback_query:
+        update.callback_query.message.reply_text(message, reply_markup=reply_markup)
+        update.callback_query.answer()
 
 
 

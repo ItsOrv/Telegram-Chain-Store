@@ -17,7 +17,6 @@ def main():
     dp.add_handler(CallbackQueryHandler(admin.add_agent_start, pattern='add_agent'))
     dp.add_handler(CallbackQueryHandler(admin.admin_manage_products, pattern='admin_manage_products'))
     dp.add_handler(CallbackQueryHandler(admin.edit_category, pattern='edit_category'))
-    #dp.add_handler(CallbackQueryHandler(admin., pattern=''))
 
     dp.add_handler(CallbackQueryHandler(admin.admin_delete_product, pattern='admin_delete_product'))
     dp.add_handler(CallbackQueryHandler(admin.admin_edit_product, pattern='admin_edit_product'))
@@ -31,6 +30,8 @@ def main():
     dp.add_handler(CallbackQueryHandler(agent.list_my_products, pattern='list_my_products'))  # نمایش محصولات
     dp.add_handler(CallbackQueryHandler(agent.handle_province_selection, pattern=r'province_'))  # انتخاب استان
     dp.add_handler(CallbackQueryHandler(agent.handle_city_selection, pattern=r'city_'))  # انتخاب شهر
+    dp.add_handler(CallbackQueryHandler(agent.handle_category_selection, pattern=r'category_'))
+
 
     # Customer handlers
     dp.add_handler(CallbackQueryHandler(customer.buy_product, pattern='buy_product'))  # خرید محصول

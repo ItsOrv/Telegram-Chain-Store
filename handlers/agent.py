@@ -97,15 +97,24 @@ def find_next_product_id(data):
 
 
 def handle_city_selection(update, context):
-    """مدیریت انتخاب شهر توسط نماینده و هدایت به ذخیره محصول."""
+    """مدیریت انتخاب شهر توسط نماینده و هدایت به انتخاب دسته‌بندی."""
     city = update.callback_query.data.split('_')[1]
     context.user_data['current_city'] = city  # ذخیره شهر انتخاب شده
 
-    # هدایت به تابع ذخیره محصول پس از انتخاب شهر
-    save_new_product(update, context)
-
-    # پاسخ به نماینده
+    # نمایش لیست دسته‌بندی‌ها پس از انتخاب شهر
+    show_categories(update, context)
     update.callback_query.answer()
+
+
+def handle_category_selection(update, context):
+    """مدیریت انتخاب دسته‌بندی توسط نماینده و ذخیره آن."""
+    category = update.callback_query.data.split('_')[1]
+    context.user_data['product_category'] = category  # ذخیره دسته‌بندی انتخاب‌شده
+
+    # حالا که تمام اطلاعات محصول داریم، محصول را ذخیره می‌کنیم
+    save_new_product(update, context)
+    update.callback_query.answer()
+
 
 
 
@@ -151,14 +160,14 @@ def process_product_details(update, context):
 
 def save_new_product(update, context):
     """ذخیره محصول جدید در پایگاه داده."""
-    # بارگیری داده‌ها از فایل JSON
     data = load_data()
 
-    # گرفتن اطلاعات از context.user_data
+    # گرفتن اطلاعات محصول از context.user_data
     product_name = context.user_data.get('product_name')
     product_description = context.user_data.get('product_description')
     product_price = context.user_data.get('product_price')
-    product_stock = context.user_data.get('product_stock')  # موجودی محصول
+    product_stock = context.user_data.get('product_stock')
+    product_category = context.user_data.get('product_category')  # دسته‌بندی محصول
     city = context.user_data.get('current_city')
     province = context.user_data.get('current_province')
     agent_id = str(update.effective_user.id)
@@ -175,6 +184,7 @@ def save_new_product(update, context):
         'price': product_price,
         'stock': product_stock,
         'sold': 0,  # تعداد فروخته شده (ابتدایی 0)
+        'category': product_category,  # ذخیره دسته‌بندی
         'province': province,
         'city': city,
         'agent_id': agent_id
@@ -192,14 +202,14 @@ def save_new_product(update, context):
     # ذخیره داده‌ها در فایل JSON
     save_data(data)
 
-    # ارسال پیام به نماینده برای تأیید (اطلاعات محصول از data['products'][product_id])
+    # ارسال پیام به نماینده برای تأیید
     product_details = (
         f"محصول شما با موفقیت اضافه شد:\n"
         f"نام: {data['products'][product_id]['name']}\n"
         f"توضیحات: {data['products'][product_id]['description']}\n"
         f"قیمت: {data['products'][product_id]['price']} تومان\n"
         f"موجودی: {data['products'][product_id]['stock']} عدد\n"
-        f"تعداد فروخته شده: {data['products'][product_id]['sold']}\n"
+        f"دسته‌بندی: {data['products'][product_id]['category']}\n"
         f"شهر: {data['products'][product_id]['city']}\n"
     )
     update.callback_query.message.reply_text(product_details)
@@ -209,8 +219,25 @@ def save_new_product(update, context):
 
 
 
+# add handle message 1
 handle_new_product = handle_message
 
+
+def show_categories(update, context):
+    """نمایش دسته‌بندی‌های موجود به عنوان دکمه شیشه‌ای."""
+    data = load_data()
+    categories = data.get('categories', [])  # دریافت دسته‌بندی‌ها از JSON
+
+    # ایجاد دکمه‌های شیشه‌ای برای هر دسته‌بندی
+    keyboard = [[InlineKeyboardButton(category, callback_data=f"category_{category}")] for category in categories]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    message = "لطفاً یک دسته‌بندی برای محصول انتخاب کنید:"
+
+    if update.message:
+        update.message.reply_text(message, reply_markup=reply_markup)
+    elif update.callback_query:
+        update.callback_query.message.reply_text(message, reply_markup=reply_markup)
+        update.callback_query.answer()
 
 
 
