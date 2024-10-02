@@ -326,3 +326,90 @@ def admin_edit_product(update, context):
 
     update.callback_query.message.reply_text(f"برای ویرایش محصول {product_name}، اطلاعات جدید را وارد کنید.")
     update.callback_query.answer()
+
+
+from utils.helpers import load_data
+
+def admin_report(update, context):
+    """Generate a report for admin including total users, agents, sold products, and total sales value."""
+    data = load_data()  # Load data from JSON file
+
+    # Calculate the number of users and agents
+    users = data.get('users', {})
+    agents = data.get('agents', {})
+    total_users = len(users)
+    total_agents = len(agents)
+
+    # Report on sold products and total sales value
+    products = data.get('products', {})
+    total_sales_value = 0
+    sold_products_report = ""
+
+    for product_id, product_info in products.items():
+        product_name = product_info.get('name', 'نامشخص')
+        product_price = product_info.get('price', 0)
+        sold_quantity = product_info.get('sold', 0)
+
+        # Only include products with sold quantity greater than 0
+        if sold_quantity > 0:
+            # Ensure price is not None before calculation
+            if product_price is not None:
+                sales_value = product_price * sold_quantity
+            else:
+                sales_value = 0
+
+            total_sales_value += sales_value
+
+            # Append product sales details to the report
+            sold_products_report += (
+                f"نام محصول: {product_name}\n"
+                f"قیمت: {product_price if product_price else 'نامشخص'} تومان\n"
+                f"تعداد فروخته شده: {sold_quantity}\n"
+                f"مبلغ فروش: {sales_value} تومان\n"
+                "-----------------------------\n"
+            )
+
+    # Construct the final report message
+    report_message = (
+        f"📊 گزارش کل 📊\n\n"
+        f"تعداد کاربران: {total_users}\n"
+        f"تعداد نماینده‌ها: {total_agents}\n\n"
+        f"مبلغ کل فروش: {total_sales_value} تومان\n"
+        "-----------------------------\n"
+        f"گزارش محصولات فروخته شده:\n"
+        f"{sold_products_report if sold_products_report else 'محصول فروخته شده‌ای وجود ندارد.'}\n"
+    )
+
+    # Check if update.message is available
+    if update.message:
+        # Send the report to the admin
+        update.message.reply_text(report_message)
+    else:
+        # Alternative way to send a message (for example, to the chat_id)
+        chat_id = update.effective_chat.id
+        context.bot.send_message(chat_id=chat_id, text=report_message)
+
+
+
+
+
+"""
+check list:
+
+- افزودن مدیریت دسته بندی \\
+(لیست دسته بندی ها) \\
+افزودن دسته بندی \\
+حذف \\
+ویرایش \\
+
+- لیست نماینده ها \\
+(نماینده و جزییات) \\
+افزودن نماینده \\
+
+- مدیریت محصولات
+
+
+- گذارش گیری \\
+(نمایش گذارش کامل) \\
+
+"""

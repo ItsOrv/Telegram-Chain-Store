@@ -21,7 +21,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(admin.admin_delete_product, pattern='admin_delete_product'))
     dp.add_handler(CallbackQueryHandler(admin.admin_edit_product, pattern='admin_edit_product'))
 
-    #dp.add_handler(CallbackQueryHandler(admin.view_orders, pattern='view_orders'))  # نمایش سفارشات
+    dp.add_handler(CallbackQueryHandler(admin.admin_report, pattern='reports'))  # نمایش سفارشات
     # edit_category
 
 
