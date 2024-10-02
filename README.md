@@ -35,7 +35,7 @@ The Telegram Chain Store Bot is a versatile Telegram bot designed for seamless e
 ## Usage
 
 - Start by interacting with the bot on Telegram.
-- Choose your role and follow the prompts to navigate through the functionalities.
+- Set your admin role in json file and follow the prompts to navigate through the functionalities.
 - Agents can add products, manage listings, and interact with customers directly.
 - Admins can oversee operations and manage user roles.
 
