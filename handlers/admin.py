@@ -390,9 +390,6 @@ def admin_report(update, context):
         context.bot.send_message(chat_id=chat_id, text=report_message)
 
 
-
-
-
 """
 check list:
 

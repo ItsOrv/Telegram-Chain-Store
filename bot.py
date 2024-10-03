@@ -28,16 +28,36 @@ def main():
     # Agent handlers
     dp.add_handler(CallbackQueryHandler(agent.add_product, pattern='add_product'))  # اضافه کردن محصول
     dp.add_handler(CallbackQueryHandler(agent.list_my_products, pattern='list_my_products'))  # نمایش محصولات
-    dp.add_handler(CallbackQueryHandler(agent.handle_province_selection, pattern=r'province_'))  # انتخاب استان
-    dp.add_handler(CallbackQueryHandler(agent.handle_city_selection, pattern=r'city_'))  # انتخاب شهر
+    #dp.add_handler(CallbackQueryHandler(agent.handle_province_selection, pattern=r'province_'))  # انتخاب استان
+    #dp.add_handler(CallbackQueryHandler(agent.handle_city_selection, pattern=r'city_'))  # انتخاب شهر
     dp.add_handler(CallbackQueryHandler(agent.handle_category_selection, pattern=r'category_'))
 
 
     # Customer handlers
+
+# خرید محصول
     dp.add_handler(CallbackQueryHandler(customer.buy_product, pattern='buy_product'))  # خرید محصول
+
+# انتخاب استان
+    dp.add_handler(CallbackQueryHandler(customer.handle_province_selection, pattern=r'province_'))  # انتخاب استان
+
+# انتخاب شهر
+    dp.add_handler(CallbackQueryHandler(customer.handle_city_selection, pattern=r'city_'))  # انتخاب شهر
+
+# انتخاب محصول
+    dp.add_handler(CallbackQueryHandler(customer.handle_product_selection, pattern=r'product_'))  # انتخاب محصول
+
+# نمایش سبد خرید
     dp.add_handler(CallbackQueryHandler(customer.show_cart, pattern='show_cart'))  # نمایش سبد خرید
+
+# نمایش سفارشات قبلی
     dp.add_handler(CallbackQueryHandler(customer.previous_orders, pattern='previous_orders'))  # نمایش سفارشات قبلی
+
+# شارژ حساب
     dp.add_handler(CallbackQueryHandler(customer.charge_account, pattern='charge_account'))  # شارژ حساب
+    dp.add_handler(CallbackQueryHandler(customer.handle_add_product, pattern=r'add_\d+'))  # برای افزایش تعداد
+    dp.add_handler(CallbackQueryHandler(customer.handle_remove_product, pattern=r'remove_\d+'))  # برای کاهش تعداد
+
 
     # Text message handlers برای متن‌های وارد شده توسط کاربر
     # dp.add_handler(MessageHandler(Filters.text & ~Filters.command, agent.handle_new_product))  # مدیریت متن مربوط به اضافه کردن محصول

@@ -23,155 +23,44 @@
             "city": "",
             "cart": {},
             "orders": []
+        },
+        "6710767367": {
+            "role": "customer",
+            "balance": 0,
+            "city": "",
+            "cart": {
+                "1": {
+                    "name": "test",
+                    "price": 50000,
+                    "quantity": 2
+                }
+            },
+            "orders": []
         }
     },
     "agents": {
         "1281905482": {
             "products": [
-                1,
+                1
+            ]
+        },
+        "6710767367": {
+            "products": [
                 2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10,
-                11,
-                12,
-                13,
-                14
+                2
             ]
         }
     },
     "products": {
         "1": {
-            "name": "تست ک۱",
-            "description": "تتتت",
-            "price": 200000,
+            "name": "test",
+            "description": "t",
+            "price": 50000,
+            "stock": 2,
+            "sold": 0,
+            "category": "آلت",
             "province": "گلستان",
             "city": "گرگان",
-            "agent_id": "1281905482"
-        },
-        "2": {
-            "name": "تست ک۱",
-            "description": "تتتت",
-            "price": 200000,
-            "province": "اصفهان",
-            "city": "فلاورجان",
-            "agent_id": "1281905482"
-        },
-        "3": {
-            "name": null,
-            "description": null,
-            "price": null,
-            "province": "یزد",
-            "city": "اشکذر",
-            "agent_id": "1281905482"
-        },
-        "4": {
-            "name": null,
-            "description": null,
-            "price": null,
-            "province": "همدان",
-            "city": "تویسرکان",
-            "agent_id": "1281905482"
-        },
-        "5": {
-            "name": "tttt",
-            "description": "uuuu",
-            "price": 570,
-            "province": "همدان",
-            "city": "اسدآباد",
-            "agent_id": "1281905482"
-        },
-        "6": {
-            "name": "hhh",
-            "description": "ttt",
-            "price": 578,
-            "province": "همدان",
-            "city": "اسدآباد",
-            "agent_id": "1281905482"
-        },
-        "7": {
-            "name": "yyyy",
-            "description": "478",
-            "price": 568,
-            "province": "هرمزگان",
-            "city": "بندر لنگه",
-            "agent_id": "1281905482"
-        },
-        "8": {
-            "name": "yyy",
-            "description": "568",
-            "price": 578,
-            "province": "هرمزگان",
-            "city": "میناب",
-            "agent_id": "1281905482"
-        },
-        "9": {
-            "name": "hhho",
-            "description": "pppp",
-            "price": 4790,
-            "stock": 358,
-            "sold": 0,
-            "province": "همدان",
-            "city": "تویسرکان",
-            "agent_id": "1281905482"
-        },
-        "10": {
-            "name": "ggggaaaaa",
-            "description": "6",
-            "price": 8642268,
-            "stock": 2211111,
-            "sold": 0,
-            "province": "همدان",
-            "city": "رزن",
-            "agent_id": "1281905482"
-        },
-        "11": {
-            "name": null,
-            "description": null,
-            "price": null,
-            "stock": null,
-            "sold": 0,
-            "category": "کیر",
-            "province": null,
-            "city": null,
-            "agent_id": "1281905482"
-        },
-        "12": {
-            "name": "تتتتتمتیحایکایکا",
-            "description": "حعیکغیکا",
-            "price": 393885,
-            "stock": 477463,
-            "sold": 0,
-            "category": "کیر",
-            "province": "هرمزگان",
-            "city": "بندر لنگه",
-            "agent_id": "1281905482"
-        },
-        "13": {
-            "name": "test",
-            "description": "testt",
-            "price": 2,
-            "stock": 5,
-            "sold": 0,
-            "category": "کیر",
-            "province": "تهران",
-            "city": "تهران",
-            "agent_id": "1281905482"
-        },
-        "14": {
-            "name": null,
-            "description": null,
-            "price": null,
-            "stock": null,
-            "sold": 0,
-            "category": "کیر",
-            "province": null,
-            "city": null,
             "agent_id": "1281905482"
         }
     }
