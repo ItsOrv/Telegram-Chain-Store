@@ -10,13 +10,22 @@ def main():
     dp.add_handler(CommandHandler("start", common.start))  # شروع
 
     # Admin handlers
+    dp.add_handler(CallbackQueryHandler(admin.admin_menu, pattern='admin_menu'))
     dp.add_handler(CallbackQueryHandler(admin.add_category, pattern='add_category'))  # اضافه کردن دسته‌بندی
     dp.add_handler(CallbackQueryHandler(admin.manage_categories, pattern='manage_categories'))  # مدیریت دسته‌بندی‌ها
     dp.add_handler(CallbackQueryHandler(admin.delete_category, pattern='delete_category'))  # حذف دسته‌بندی
     dp.add_handler(CallbackQueryHandler(admin.list_agents, pattern='list_agents'))  # لیست نمایندگان
     dp.add_handler(CallbackQueryHandler(admin.add_agent_start, pattern='add_agent'))
-    dp.add_handler(CallbackQueryHandler(admin.admin_manage_products, pattern='admin_manage_products'))
+    dp.add_handler(CallbackQueryHandler(admin.admin_manage_single_product, pattern='admin_manage_single_product'))
     dp.add_handler(CallbackQueryHandler(admin.edit_category, pattern='edit_category'))
+    dp.add_handler(CallbackQueryHandler(admin.add_agent, pattern='add_agent'))
+
+
+    dp.add_handler(CallbackQueryHandler(admin.manage_agent, pattern='manage_agent_'))
+    dp.add_handler(CallbackQueryHandler(admin.get_report, pattern='get_report_'))
+    dp.add_handler(CallbackQueryHandler(admin.delete_agent, pattern='delete_agent_'))
+
+
 
     dp.add_handler(CallbackQueryHandler(admin.admin_delete_product, pattern='admin_delete_product'))
     dp.add_handler(CallbackQueryHandler(admin.admin_edit_product, pattern='admin_edit_product'))
@@ -57,6 +66,32 @@ def main():
     dp.add_handler(CallbackQueryHandler(customer.charge_account, pattern='charge_account'))  # شارژ حساب
     dp.add_handler(CallbackQueryHandler(customer.handle_add_product, pattern=r'add_\d+'))  # برای افزایش تعداد
     dp.add_handler(CallbackQueryHandler(customer.handle_remove_product, pattern=r'remove_\d+'))  # برای کاهش تعداد
+        # Callback query handlers
+
+    dp.add_handler(CallbackQueryHandler(customer.handle_add_product, pattern=r'add_'))
+    dp.add_handler(CallbackQueryHandler(customer.handle_remove_product, pattern=r'remove_'))
+    #dp.add_handler(CallbackQueryHandler(customer.confirm_order, pattern='confirm_order'))
+
+    dp.add_handler(CallbackQueryHandler(customer.previous_orders, pattern='previous_orders'))
+
+    dp.add_handler(CallbackQueryHandler(customer.contact_admin, pattern='contact_admin'))
+
+    dp.add_handler(CallbackQueryHandler(customer.remove_from_cart, pattern='remove_from_cart'))
+
+    dp.add_handler(CallbackQueryHandler(customer.card_to_card_payment, pattern='card_to_card_payment'))
+    dp.add_handler(CallbackQueryHandler(customer.crypto_payment, pattern='crypto_payment'))
+    
+    dp.add_handler(CallbackQueryHandler(customer.handle_back, pattern='handle_back'))
+
+    dp.add_handler(CallbackQueryHandler(customer.handle_back, pattern='back_to_main_menu'))
+    dp.add_handler(CallbackQueryHandler(customer.handle_back, pattern='back_to_buy_product'))
+    dp.add_handler(CallbackQueryHandler(customer.handle_back, pattern='back_to_province_selection'))
+    dp.add_handler(CallbackQueryHandler(customer.handle_back, pattern='back_to_city_selection'))
+    dp.add_handler(CallbackQueryHandler(customer.handle_back, pattern='back_to_product_list'))
+    #dp.add_handler(CallbackQueryHandler(customer.add_product_to_cart, pattern=r'add_to_cart_\d+'))
+
+    dp.add_handler(CallbackQueryHandler(customer.handle_cancel_product_message, pattern='cancel_product_message'))
+
 
 
     # Text message handlers برای متن‌های وارد شده توسط کاربر
@@ -77,4 +112,3 @@ if __name__ == '__main__':
 
 # دکمه لیست نماینده ها 
 # بررسی دوباره ادیت محصولات ادمین
-# به محصولات متغیر دسته بندی هم اضافه شود

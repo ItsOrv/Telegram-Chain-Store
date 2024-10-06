@@ -70,17 +70,17 @@ def confirm_payment(user_id, amount):
     return True
 
 # ایجاد سفارش جدید برای کاربر
-def create_order(user_id):
+def create_order(user_id, cart):
     data = load_data()
     user = data["users"].get(str(user_id))
 
-    if not user or not user.get("cart"):
+    if not user or not cart:
         return None  # اگر کاربر یا سبد خرید وجود نداشته باشد
     
     new_order_id = len(user["orders"]) + 1
     order = {
         "order_id": new_order_id,
-        "products": user["cart"],
+        "products": cart,
         "status": "pending"
     }
     user["orders"].append(order)

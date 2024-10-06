@@ -44,7 +44,7 @@ def handle_message(update, context):
     elif context.user_data.get('charging'):
         customer.handle_charge_account(update, context)
     elif context.user_data.get('adding_agent'):
-        admin.handle_agent_id_input(update, context)
+        admin.add_agent(update, context)
     elif context.user_data.get('editing_category'):
         admin.handle_edit_message(update, context)
     else:

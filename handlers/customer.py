@@ -14,32 +14,37 @@ def customer_menu(update, context):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
+    context.user_data['previous_step'] = None  # منوی اصلی مرحله ابتدایی است
+
     if update.message:
         update.message.reply_text("به ربات فروش خوش آمدید", reply_markup=reply_markup)
     elif update.callback_query:
-        update.callback_query.message.reply_text("به ربات فروش خوش آمدید", reply_markup=reply_markup)
+        update.callback_query.edit_message_text("به ربات فروش خوش آمدید", reply_markup=reply_markup)
         update.callback_query.answer()
 
-
+# شروع خرید محصول مرحله ۱:
 def buy_product(update, context):
     data = load_data()
-    # استخراج استان‌ها از محصولات
     provinces = set(product_info['province'] for product_info in data["products"].values())
     
     if provinces:
         keyboard = [[InlineKeyboardButton(province, callback_data=f"province_{province}")] for province in provinces]
+        keyboard.append([InlineKeyboardButton("🔙 بازگشت", callback_data="back_to_main_menu")])
         reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        context.user_data['previous_step'] = 'main_menu'
         
         if update.message:
             update.message.reply_text("لطفاً استان خود را انتخاب کنید:", reply_markup=reply_markup)
         elif update.callback_query:
-            update.callback_query.message.reply_text("لطفاً استان خود را انتخاب کنید:", reply_markup=reply_markup)
+            update.callback_query.edit_message_text("لطفاً استان خود را انتخاب کنید:", reply_markup=reply_markup)
             update.callback_query.answer()
     else:
+        message = "هیچ استانی در دسترس نیست."
         if update.message:
-            update.message.reply_text("هیچ استانی ثبت نشده است.")
+            update.message.reply_text(message)
         elif update.callback_query:
-            update.callback_query.message.reply_text("هیچ استانی ثبت نشده است.")
+            update.callback_query.edit_message_text(message)
             update.callback_query.answer()
 
 
@@ -49,15 +54,17 @@ def handle_province_selection(update, context):
     query = update.callback_query
     province = query.data.split("_")[1]
     
-    # پیدا کردن شهرها بر اساس محصولات مرتبط با استان
     cities = {product_info['city'] for product_info in data["products"].values() if product_info["province"] == province}
-
+    
     if cities:
         keyboard = [[InlineKeyboardButton(city, callback_data=f"city_{city}")] for city in cities]
+        keyboard.append([InlineKeyboardButton("🔙 بازگشت", callback_data="back_to_buy_product")])
         reply_markup = InlineKeyboardMarkup(keyboard)
-        query.message.reply_text(f"شهرهای استان {province} را انتخاب کنید:", reply_markup=reply_markup)
+        
+        context.user_data['previous_step'] = 'buy_product'
+        query.edit_message_text(f"شهرهای استان {province} را انتخاب کنید:", reply_markup=reply_markup)
     else:
-        query.message.reply_text(f"در استان {province} شهری ثبت نشده است.")
+        query.edit_message_text(f"در استان {province} هیچ شهری در دسترس نیست.")
     
     query.answer()
 
@@ -68,35 +75,83 @@ def handle_city_selection(update, context):
     query = update.callback_query
     city = query.data.split("_")[1]
 
-    # پیدا کردن محصولاتی که در شهر انتخابی موجود هستند
     products = [product_info for product_info in data["products"].values() if product_info["city"] == city]
 
     if products:
-        # ساختن دکمه‌های شیشه‌ای برای محصولات به همراه نام و قیمت
         keyboard = [
             [InlineKeyboardButton(f"{product['name']} - {product['price']} تومان", callback_data=f"product_{product_id}")]
             for product_id, product in data["products"].items() if product["city"] == city
         ]
+        keyboard.append([InlineKeyboardButton("🔙 بازگشت به منوی اصلی", callback_data="back_to_main_menu")])
         reply_markup = InlineKeyboardMarkup(keyboard)
-        query.message.reply_text(f"محصولات موجود در شهر {city}:", reply_markup=reply_markup)
+        
+        context.user_data['previous_step'] = 'handle_province_selection'
+        query.edit_message_text(f"محصولات موجود در شهر {city}:", reply_markup=reply_markup)
     else:
-        query.message.reply_text(f"در شهر {city} محصولی موجود نیست.")
+        query.edit_message_text(f"در شهر {city} محصولی موجود نیست.")
     
     query.answer()
 
 
-
-
-# مرحله 4: نمایش اطلاعات محصول انتخابی و افزودن به سبد خرید
-# مرحله 4: نمایش اطلاعات محصول انتخابی و افزودن به سبد خرید
-# مرحله 4: نمایش اطلاعات محصول انتخابی و افزودن به سبد خرید
+# مرحله 4: نمایش اطلاعات محصول انتخابی
 def handle_product_selection(update, context):
     query = update.callback_query
     product_id = query.data.split('_')[1]
-    
-    # افزودن محصول به سبد خرید
-    add_product_to_cart(update, context, product_id)
+
+    data = load_data()
+    product_info = data["products"].get(product_id)
+
+    if product_info:
+        # نمایش اطلاعات محصول
+        product_details = f"📦 محصول: {product_info['name']}\n💰 قیمت: {product_info['price']} تومان\n📖 توضیحات: {product_info['description']}"
+
+        keyboard = [
+            [InlineKeyboardButton("➕ افزودن به سبد خرید", callback_data=f"add_to_cart_{product_id}")],
+            [InlineKeyboardButton("❌ لغو", callback_data="cancel_product_message")]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        # ارسال پیام جدید با اطلاعات محصول
+        query.message.reply_text(product_details, reply_markup=reply_markup)
+
     query.answer()
+
+
+    
+def handle_cancel_product_message(update, context):
+    query = update.callback_query
+    query.delete_message()
+    query.answer("پیام حذف شد.")
+
+
+def show_product_details(update, context, product_id):
+    query = update.callback_query
+    data = load_data()
+    product_info = data["products"].get(product_id)
+
+    if product_info:
+        product_message = f"نام محصول: {product_info['name']}\n" \
+                          f"قیمت: {product_info['price']}\n" \
+                          f"توضیحات: {product_info['description']}\n" 
+                          #f"موجودی: {product_info['inventory']}\n"
+
+        # ارسال پیام جدید با اطلاعات محصول
+        context.bot.send_message(chat_id=query.message.chat_id, text=product_message)
+
+        # دکمه‌های افزودن به سبد خرید و لغو
+        keyboard = [
+            [InlineKeyboardButton("➕ افزودن به سبد خرید", callback_data=f"add_to_cart_{product_id}")],
+            [InlineKeyboardButton("❌ لغو", callback_data="cancel_product_info")]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        # ارسال دکمه‌ها در زیر پیام
+        context.bot.send_message(chat_id=query.message.chat_id, text="لطفا اقدام خود را انتخاب کنید:", reply_markup=reply_markup)
+
+        # حذف پیام قبلی (لیست محصولات)
+        
+    query.answer()
+
 
 # افزودن محصول به سبد خرید
 def add_product_to_cart(update, context, product_id):
@@ -109,12 +164,12 @@ def add_product_to_cart(update, context, product_id):
         if "cart" not in user:
             user["cart"] = {}
 
-        # بررسی وجود محصول در سبد خرید
+        # در صورت موجود بودن محصول در سبد خرید
         if product_id in user["cart"]:
             user["cart"][product_id]["quantity"] += 1
             message = f"تعداد محصول {user['cart'][product_id]['name']} افزایش یافت."
         else:
-            # بررسی وجود محصول در دیتابیس
+            # در صورت موچود نبودن محصول در سبد خرید کاربر
             product_info = data["products"].get(product_id)
             if product_info:
                 user["cart"][product_id] = {
@@ -131,11 +186,9 @@ def add_product_to_cart(update, context, product_id):
                     update.callback_query.message.reply_text(message)
                 return
 
-        # ذخیره‌سازی داده‌ها
         save_data(data)
         update_user(user_id, user)
 
-        # ارسال پیام به کاربر
         if update.message:
             update.message.reply_text(message)
         elif update.callback_query:
@@ -144,15 +197,10 @@ def add_product_to_cart(update, context, product_id):
     else:
         # اگر کاربر در دیتابیس موجود نباشد
         if update.message:
-            update.message.reply_text("کاربر یافت نشد.")
+            update.message.reply_text("ایدی کاربری شما در دیتابیس یافت نشد، لطفا ربات را دوباره راه اندازی کنید و با مدیر در ارتباط باشید. \n /start")
         elif update.callback_query:
-            update.callback_query.message.reply_text("کاربر یافت نشد.")
+            update.callback_query.message.reply_text("ایدی کاربری شما در دیتابیس یافت نشد، لطفا ربات را دوباره راه اندازی کنید و با مدیر در ارتباط باشید. \n /start")
 
-# نمایش سبد خرید
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-
-# نمایش سبد خرید با دکمه‌های شیشه‌ای
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 # نمایش سبد خرید با دکمه‌های شیشه‌ای
 def show_cart(update, context):
@@ -164,32 +212,26 @@ def show_cart(update, context):
     if cart:
         keyboard = []
         for product_id, product_info in cart.items():
-            # دکمه محصول با نمایش نام، قیمت و تعداد
             product_button = InlineKeyboardButton(
                 text=f"{product_info['name']} - قیمت: {product_info['price']} تومان - تعداد: {product_info['quantity']}",
                 callback_data=f"product_{product_id}"
             )
-            # دکمه‌های «+» و «-»
             plus_button = InlineKeyboardButton(text="➕", callback_data=f"add_{product_id}")
             minus_button = InlineKeyboardButton(text="➖", callback_data=f"remove_{product_id}")
-
-            # افزودن دکمه‌های محصول و + و - به صفحه
             keyboard.append([product_button])
             keyboard.append([minus_button, plus_button])
 
-        # دکمه تأیید سفارش
         confirm_button = InlineKeyboardButton(text="تأیید سفارش", callback_data="confirm_order")
         keyboard.append([confirm_button])
-
+        keyboard.append([InlineKeyboardButton("🔙 بازگشت", callback_data="back_to_main_menu")])
+        
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        # ویرایش پیام به‌جای ارسال یک پیام جدید
         if update.message:
             update.message.reply_text("سبد خرید شما:", reply_markup=reply_markup)
         elif update.callback_query:
             update.callback_query.edit_message_text("سبد خرید شما:", reply_markup=reply_markup)
             update.callback_query.answer()
-
     else:
         message = "سبد خرید شما خالی است."
         if update.message:
@@ -197,6 +239,7 @@ def show_cart(update, context):
         elif update.callback_query:
             update.callback_query.edit_message_text(message)
             update.callback_query.answer()
+
 
 # هندلر برای افزایش تعداد محصول
 def handle_add_product(update, context):
@@ -238,11 +281,8 @@ def handle_remove_product(update, context):
     show_cart(update, context)
     query.answer()
 
-
-
-
-
 # تأیید سفارش
+"""
 def confirm_order(update, context):
     user_id = update.effective_user.id
     data = load_data()
@@ -264,13 +304,14 @@ def confirm_order(update, context):
         update.callback_query.message.reply_text("سبد خرید شما خالی است.")
     
     update.callback_query.answer()
-
+"""
 
 
 # نمایش خریدهای قبلی
 # نمایش خریدهای قبلی
 def previous_orders(update, context):
     user_id = update.effective_user.id
+
     data = load_data()
     user = data["users"].get(str(user_id), {})
 
@@ -464,6 +505,27 @@ def go_back(update, context):
     # مراحل دیگر را به همین ترتیب اضافه کنید
     
     query.answer()
+
+def handle_back(update, context):
+    query = update.callback_query
+    callback_data = query.data
+    
+    if callback_data == "back_to_main_menu":
+        customer_menu(update, context)
+    elif callback_data == "back_to_buy_product":
+        buy_product(update, context)
+    elif callback_data == "back_to_province_selection":
+        handle_province_selection(update, context)
+    elif callback_data == "x":
+        handle_city_selection(update, context)
+    elif callback_data == "back_to_product_list":
+        handle_product_selection(update, context)
+    
+    query.answer()
+
+
+
+
 
 
 """

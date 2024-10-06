@@ -1,6 +1,6 @@
 {
     "categories": [
-        "آلت"
+        "تست"
     ],
     "users": {
         "6663338157": {
@@ -28,13 +28,7 @@
             "role": "customer",
             "balance": 0,
             "city": "",
-            "cart": {
-                "1": {
-                    "name": "test",
-                    "price": 50000,
-                    "quantity": 2
-                }
-            },
+            "cart": {},
             "orders": []
         }
     },
@@ -42,12 +36,6 @@
         "1281905482": {
             "products": [
                 1
-            ]
-        },
-        "6710767367": {
-            "products": [
-                2,
-                2
             ]
         }
     },
