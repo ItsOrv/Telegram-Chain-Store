@@ -29,7 +29,74 @@
             "balance": 0,
             "city": "",
             "cart": {},
-            "orders": []
+            "orders": [
+                {
+                    "order_id": 1,
+                    "products": {
+                        "1": {
+                            "name": "test",
+                            "price": 50000,
+                            "quantity": 1
+                        }
+                    },
+                    "status": "تأیید شده"
+                },
+                {
+                    "order_id": 2,
+                    "products": {
+                        "1": {
+                            "name": "test",
+                            "price": 50000,
+                            "quantity": 1
+                        }
+                    },
+                    "status": "در انتظار تایید"
+                },
+                {
+                    "order_id": 3,
+                    "products": {
+                        "1": {
+                            "name": "test",
+                            "price": 50000,
+                            "quantity": 1
+                        }
+                    },
+                    "status": "در انتظار تایید"
+                },
+                {
+                    "order_id": 4,
+                    "products": {
+                        "1": {
+                            "name": "test",
+                            "price": 50000,
+                            "quantity": 1
+                        }
+                    },
+                    "status": "در انتظار تایید"
+                },
+                {
+                    "order_id": 5,
+                    "products": {
+                        "1": {
+                            "name": "test",
+                            "price": 50000,
+                            "quantity": 2
+                        }
+                    },
+                    "status": "در انتظار تایید"
+                },
+                {
+                    "order_id": 6,
+                    "products": {
+                        "1": {
+                            "name": "test",
+                            "price": 50000,
+                            "quantity": 1
+                        }
+                    },
+                    "status": "در انتظار تایید"
+                }
+            ]
         },
         "1": {
             "role": "agent",
@@ -71,7 +138,7 @@
             "name": "test",
             "description": "t",
             "price": 50000,
-            "stock": 2,
+            "stock": 9999,
             "sold": 0,
             "category": "آلت",
             "province": "گلستان",

@@ -41,10 +41,8 @@ def main():
     dp.add_handler(CallbackQueryHandler(agent.agent_find_next_product_id, pattern='agent_find_next_product_id'))
     dp.add_handler(CallbackQueryHandler(agent.agent_show_categories, pattern='agent_show_categories'))
     dp.add_handler(CallbackQueryHandler(agent.agent_list_my_products, pattern='agent_list_my_products')) 
-    
 
     # Customer handlers
-    """
     dp.add_handler(CallbackQueryHandler(customer.customer_buy_product, pattern='customer_buy_product'))  # خرید محصول
     dp.add_handler(CallbackQueryHandler(customer.customer_handle_province_selection, pattern='customer_province_'))  # انتخاب استان
     dp.add_handler(CallbackQueryHandler(customer.customer_handle_city_selection, pattern='customer_city_'))  # انتخاب شهر
@@ -52,24 +50,26 @@ def main():
     dp.add_handler(CallbackQueryHandler(customer.customer_show_cart, pattern='customer_show_cart'))  # نمایش سبد خرید
     dp.add_handler(CallbackQueryHandler(customer.customer_previous_orders, pattern='customer_previous_orders'))  # نمایش سفارشات قبلی
     dp.add_handler(CallbackQueryHandler(customer.customer_charge_account, pattern='customer_charge_account'))  # شارژ حساب
-    dp.add_handler(CallbackQueryHandler(customer.customer_handle_add_product, pattern='customer_add_'))  # برای افزایش تعداد
-    dp.add_handler(CallbackQueryHandler(customer.customer_handle_remove_product, pattern='customer_remove_'))  # برای ک
-    dp.add_handler(CallbackQueryHandler(customer.customer_handle_add_product, pattern='customer_add_'))
-    dp.add_handler(CallbackQueryHandler(customer.customer_handle_remove_product, pattern='customer_remove_'))
-    dp.add_handler(CallbackQueryHandler(customer.customer_previous_orders, pattern='customer_previous_orders'))
+    dp.add_handler(CallbackQueryHandler(customer.customer_handle_add_product, pattern=r'customer_add_'))  # برای افزایش تعداد
+    dp.add_handler(CallbackQueryHandler(customer.customer_handle_remove_product, pattern=r'customer_remove_'))
     dp.add_handler(CallbackQueryHandler(customer.customer_contact_admin, pattern='customer_contact_admin'))
     dp.add_handler(CallbackQueryHandler(customer.customer_remove_from_cart, pattern='customer_remove_from_cart'))
     dp.add_handler(CallbackQueryHandler(customer.customer_card_to_card_payment, pattern='customer_card_to_card_payment'))
     dp.add_handler(CallbackQueryHandler(customer.customer_crypto_payment, pattern='customer_crypto_payment'))
-    dp.add_handler(CallbackQueryHandler(customer.customer_handle_back, pattern='customer_handle_back'))
-    dp.add_handler(CallbackQueryHandler(customer.customer_handle_back, pattern='customer_back_to_main_menu'))
+    dp.add_handler(CallbackQueryHandler(customer.customer_menu, pattern='customer_menu'))
+    dp.add_handler(CallbackQueryHandler(customer.customer_confirm_order, pattern='customer_confirm_order'))
+    dp.add_handler(CallbackQueryHandler(customer.customer_pay_with_balance, pattern='customer_pay_with_balance'))
+
+    '''
     dp.add_handler(CallbackQueryHandler(customer.customer_handle_back, pattern='customer_back_to_buy_product'))
     dp.add_handler(CallbackQueryHandler(customer.customer_handle_back, pattern='customer_back_to_province_selection'))
     dp.add_handler(CallbackQueryHandler(customer.customer_handle_back, pattern='customer_back_to_city_selection'))
     dp.add_handler(CallbackQueryHandler(customer.customer_handle_back, pattern='customer_back_to_product_list'))
-    dp.add_handler(CallbackQueryHandler(customer.customer_add_product_to_cart, pattern='customer_add_to_cart_'))
+    '''
+
+    #bug
+    dp.add_handler(CallbackQueryHandler(customer.customer_add_product_to_cart, pattern=r'add_to_cart_\d+'))
     dp.add_handler(CallbackQueryHandler(customer.customer_handle_cancel_product_message, pattern='customer_cancel_product_message'))
-    """
 
     # Text message handlers
     dp.add_handler(MessageHandler(Filters.text & ~Filters.command, common.handle_message))

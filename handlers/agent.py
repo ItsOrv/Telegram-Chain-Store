@@ -291,8 +291,9 @@ def agent_list_my_products(update, context):
     else:
         update.message.reply_text(message)
 
-'''
+
 def agent_edit_product(update, context):
+    '''
     """Handle editing options for a specific product."""
     query = update.callback_query
     product_id = query.data.split('_')[-1]
@@ -309,8 +310,11 @@ def agent_edit_product(update, context):
     
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.edit_message_text(f"ویرایش محصول {product_id}:", reply_markup=reply_markup)
+    '''
+
 
 def agent_delete_product(update, context):
+    '''
     """Handle product deletion confirmation."""
     query = update.callback_query
     product_id = query.data.split('_')[-1]
@@ -319,11 +323,9 @@ def agent_delete_product(update, context):
     delete_product_from_database(product_id)  # فانکشن کمکی برای حذف محصول
     
     query.edit_message_text(f"محصول {product_id} با موفقیت حذف شد.")
+    '''
 
-'''
-
-
-
+    
 
 
 """
