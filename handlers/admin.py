@@ -5,10 +5,10 @@ from utils.helpers import load_data, save_data
 def admin_menu(update, context):
     """نمایش منوی اصلی ادمین."""
     keyboard = [
-        [InlineKeyboardButton("مدیریت دسته‌بندی‌ها", callback_data='manage_categories')],
-        [InlineKeyboardButton("مدیریت محصولات و نماینده‌ها", callback_data='list_agents')],
-        [InlineKeyboardButton("افزودن نماینده", callback_data='add_agent_start')],
-        [InlineKeyboardButton("گزارش‌گیری", callback_data='reports')]
+        [InlineKeyboardButton("مدیریت دسته‌بندی‌ها", callback_data='admin_manage_categories')],
+        [InlineKeyboardButton("مدیریت محصولات و نماینده‌ها", callback_data='admin_list_agents')],
+        [InlineKeyboardButton("افزودن نماینده", callback_data='admin_add_agent_start')],
+        [InlineKeyboardButton("گزارش‌گیری", callback_data='admin_report')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     message = "به پنل ادمین خوش آمدید"
@@ -21,17 +21,17 @@ def admin_menu(update, context):
         update.message.reply_text(message, reply_markup=reply_markup)
 
 #pass
-def manage_categories(update, context):
+def admin_manage_categories(update, context):
     """مدیریت دسته‌بندی‌ها و نمایش دکمه‌های مربوطه."""
     data = load_data()
     categories = data.get("categories", [])
 
-    keyboard = [[InlineKeyboardButton("افزودن دسته‌بندی", callback_data='add_category')]]
+    keyboard = [[InlineKeyboardButton("افزودن دسته‌بندی", callback_data='admin_add_category')]]
     for category in categories:
         keyboard.append([InlineKeyboardButton(f"{category}", callback_data=f'view_category_{category}')])
         keyboard.append([
-            InlineKeyboardButton("ویرایش", callback_data=f'edit_category_{category}'),
-            InlineKeyboardButton("حذف", callback_data=f'delete_category_{category}')
+            InlineKeyboardButton("ویرایش", callback_data=f'admin_edit_category_{category}'),
+            InlineKeyboardButton("حذف", callback_data=f'admin_delete_category_{category}')
         ])
 
     # اضافه کردن دکمه بازگشت به منوی اصلی
@@ -48,7 +48,7 @@ def manage_categories(update, context):
         update.message.reply_text(message, reply_markup=reply_markup)
 
 #pass
-def add_category(update, context):
+def admin_add_category(update, context):
     """درخواست نام دسته‌بندی جدید از کاربر."""
     if update.callback_query:
         # حذف کیبورد شیشه‌ای قبلی
@@ -79,18 +79,18 @@ def handle_new_category(update, context):
             # update.message.delete()
 
             # آپدیت منوی دسته‌بندی‌ها
-            manage_categories(update, context)
+            admin_manage_categories(update, context)
         else:
             update.message.reply_text(f"دسته‌بندی '{new_category}' قبلاً وجود دارد.")
-            manage_categories(update, context)
+            admin_manage_categories(update, context)
 
         context.user_data['adding_category'] = False
     else:
         update.message.reply_text("ابتدا از منوی مدیریت دسته‌بندی‌ها اقدام کنید.")
-        manage_categories(update, context)
+        admin_manage_categories(update, context)
 
 #pass
-def edit_category(update, context):
+def admin_edit_category(update, context):
     """درخواست نام جدید دسته‌بندی برای ویرایش."""
     query = update.callback_query
     category = query.data.split('_')[-1]
@@ -125,12 +125,12 @@ def handle_edit_message(update, context):
             # update.message.delete()
 
             # آپدیت منوی دسته‌بندی‌ها
-            manage_categories(update, context)
+            admin_manage_categories(update, context)
 
         context.user_data.clear()
 
 #pass
-def delete_category(update, context):
+def admin_delete_category(update, context):
     """حذف دسته‌بندی."""
     query = update.callback_query
     category = query.data.split('_')[-1]
@@ -146,16 +146,16 @@ def delete_category(update, context):
         # (بلد نیستم)
 
         # آپدیت منوی دسته‌بندی‌ها
-        manage_categories(update, context)
+        admin_manage_categories(update, context)
         # context.job_queue.run_once(lambda _: confirmation_message.delete(), 3)
     else:
         query.message.reply_text("دسته‌بندی وجود ندارد.")
-        manage_categories(update, context)
+        admin_manage_categories(update, context)
 
     query.answer()
 
 #pass
-def list_agents(update, context):
+def admin_list_agents(update, context):
     """لیست نماینده‌ها و محصولات آن‌ها را به صورت پیام‌های جداگانه با دکمه‌های شیشه‌ای نمایش می‌دهد."""
     data = load_data()
     agents = data.get("agents", {})
@@ -171,7 +171,7 @@ def list_agents(update, context):
                 # دکمه اصلی نماینده شامل نام و تعداد محصولات
                 keyboard = [
                     # دکمه مدیریت نماینده
-                    [InlineKeyboardButton(f"مدیریت نماینده", callback_data=f'manage_agent_{agent_id}')],
+                    [InlineKeyboardButton(f"مدیریت نماینده", callback_data=f'admin_manage_agent_{agent_id}')],
                     # دکمه نمایش تعداد محصولات
                     [InlineKeyboardButton(f"↓↓ تعداد محصولات: {product_count} ↓↓", callback_data=f'view_agent_{agent_id}')]
                 ]
@@ -187,8 +187,8 @@ def list_agents(update, context):
                             keyboard.append([InlineKeyboardButton(f"📦 {product_name}", callback_data=f'admin_manage_single_product_{agent_id}_{product_id}')])
                             # دکمه‌های ویرایش و حذف برای هر محصول
                             """keyboard.append([
-                                InlineKeyboardButton("ویرایش", callback_data=f'edit_product_{product_id}'),
-                                InlineKeyboardButton("حذف", callback_data=f'delete_product_{product_id}')
+                                InlineKeyboardButton("ویرایش", callback_data=f'admin_edit_product_{product_id}'),
+                                InlineKeyboardButton("حذف", callback_data=f'admin_delete_product_{product_id}')
                             ])"""
                 else:
                     keyboard.append([InlineKeyboardButton("این نماینده هنوز هیچ محصولی اضافه نکرده است.", callback_data='no_action')])
@@ -204,7 +204,7 @@ def list_agents(update, context):
                 
                 # ارسال پیام جداگانه برای هر نماینده
                 if update.callback_query:
-                    update.callback_query.message.delete()  # حذف پیام قبلی
+                    #update.callback_query.message.delete()  # حذف پیام قبلی
                     update.callback_query.message.reply_text(message, reply_markup=reply_markup)
                     update.callback_query.answer()
                 else:
@@ -217,7 +217,7 @@ def list_agents(update, context):
             update.callback_query.answer()
 
 #pass
-def manage_agent(update, context):
+def admin_manage_agent(update, context):
     """مدیریت اطلاعات نماینده شامل حذف و دریافت گزارش."""
     query = update.callback_query
     data = query.data  # دریافت داده callback_query
@@ -232,8 +232,8 @@ def manage_agent(update, context):
 
         # ساختار دکمه‌های مدیریتی
         keyboard = [
-            [InlineKeyboardButton("دریافت گزارش کامل", callback_data=f'get_report_{agent_id}')],
-            [InlineKeyboardButton("حذف نماینده", callback_data=f'delete_agent_{agent_id}')],
+            [InlineKeyboardButton("دریافت گزارش کامل", callback_data=f'admin_get_report_{agent_id}')],
+            [InlineKeyboardButton("حذف نماینده", callback_data=f'admin_delete_agent_{agent_id}')],
             [InlineKeyboardButton("بازگشت به منوی اصلی", callback_data='admin_menu')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -248,7 +248,7 @@ def manage_agent(update, context):
         query.answer()
 
 #pass
-def get_report(update, context):
+def admin_get_report(update, context):
     """Generate a report for a specific agent including sold products and total sales value."""
     query = update.callback_query
     data = query.data  # دریافت داده callback_query
@@ -306,7 +306,7 @@ def get_report(update, context):
     query.answer()
 
 #pass
-def delete_agent(update, context):
+def admin_delete_agent(update, context):
     """حذف نماینده از لیست و بروزرسانی داده‌ها."""
     query = update.callback_query
     data = query.data  # دریافت داده‌های callback
@@ -383,7 +383,7 @@ def admin_manage_single_product(update, context):
                 InlineKeyboardButton("ویرایش", callback_data=f"admin_edit_product_{agent_id}_{product_id}"),
                 InlineKeyboardButton("حذف", callback_data=f"admin_delete_product_{product_id}")
             ],
-            [InlineKeyboardButton("🔙 بازگشت", callback_data="list_agents")]
+            [InlineKeyboardButton("🔙 بازگشت", callback_data="admin_list_agents")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -401,8 +401,7 @@ def admin_manage_single_product(update, context):
 def admin_delete_product(update, context):
     """حذف محصول توسط ادمین."""
     query_data = update.callback_query.data.split('_')
-    product_id = query_data[4]  # استخراج product_id
-
+    product_id = query_data[3]  # استخراج product_id
     data = load_data()
     product_info = data["products"].get(product_id)
 
@@ -430,17 +429,20 @@ def admin_edit_product(update, context):
     update.callback_query.message.reply_text(f"این بخش در اپدیت بعدی اضافه خواهد شد")
     update.callback_query.answer()
 
+#pass
+def admin_add_agent_start(update, context):
+    """شروع فرآیند افزودن نماینده با درخواست ID عددی نماینده جدید به همراه دکمه لغو."""
+    keyboard = [[InlineKeyboardButton("لغو", callback_data='admin_menu')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
-def add_agent_start(update, context):
-    """شروع فرآیند افزودن نماینده با درخواست ID عددی نماینده جدید."""
-    print('test add agent')
-    update.callback_query.message.reply_text("لطفاً ID عددی نماینده جدید را وارد کنید:")
+    update.callback_query.message.reply_text("لطفاً ID عددی نماینده جدید را وارد کنید:", reply_markup=reply_markup)
     update.callback_query.answer()
 
     # ذخیره مرحله برای دریافت ID نماینده
     context.user_data['adding_agent'] = True
 
-def add_agent(update, context):
+#pass
+def admin_add_agent(update, context):
     """افزودن نماینده جدید به دیتابیس."""
     if 'adding_agent' in context.user_data and context.user_data['adding_agent']:
         agent_id = update.message.text.strip()  # دریافت ID نماینده از ورودی کاربر
@@ -453,7 +455,7 @@ def add_agent(update, context):
             data = load_data()
 
             # بررسی اینکه آیا نماینده با این ID قبلاً وجود دارد
-            if agent_id not in data['users']:
+            if agent_id not in data['agents']:
                 # افزودن نماینده به دیتابیس
                 data['users'][agent_id] = {
                     "role": "agent",
@@ -472,13 +474,20 @@ def add_agent(update, context):
                 save_data(data)
 
                 update.message.reply_text(f"نماینده با ID {agent_id} با موفقیت اضافه شد.")
+                admin_menu(update, context)
             else:
-                update.message.reply_text("این ID نماینده قبلاً وجود دارد. لطفاً یک ID دیگر وارد کنید.")
+                keyboard = [[InlineKeyboardButton("لغو", callback_data='admin_menu')]]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                update.message.reply_text("این ID نماینده قبلاً وجود دارد. لطفاً یک ID دیگر وارد کنید.", reply_markup=reply_markup)
+                
         else:
-            update.message.reply_text("لطفاً یک ID عددی معتبر وارد کنید.")
+            keyboard = [[InlineKeyboardButton("لغو", callback_data='admin_menu')]]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            update.message.reply_text("لطفاً یک ID عددی معتبر وارد کنید.", reply_markup=reply_markup)
     else:
-        update.message.reply_text("فرآیند افزودن نماینده هنوز آغاز نشده است.")
-
+        keyboard = [[InlineKeyboardButton("لغو", callback_data='admin_menu')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        update.message.reply_text("فرآیند افزودن نماینده هنوز آغاز نشده است.", reply_markup=reply_markup)
 
 #pass
 def admin_report(update, context):
@@ -539,25 +548,3 @@ def admin_report(update, context):
         # Alternative way to send a message (for example, to the chat_id)
         chat_id = update.effective_chat.id
         context.bot.send_message(chat_id=chat_id, text=report_message)
-
-
-"""
-check list:
-
-- افزودن مدیریت دسته بندی 
-(لیست دسته بندی ها) 
-    افزودن دسته بندی 
-    حذف 
-    ویرایش 
-
-- لیست نماینده ها 
-(نماینده و جزییات) 
-    افزودن نماینده 
-
-- مدیریت محصولات
-
-
-- گذارش گیری \\
-(نمایش گذارش کامل)
-
-"""

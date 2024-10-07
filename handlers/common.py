@@ -38,14 +38,14 @@ def handle_message(update, context):
     state = context.user_data.get('state')
 
     if context.user_data.get('adding_product'):
-        agent.handle_new_product(update, context)
+        agent.agent_add_product(update, context)
     elif context.user_data.get('adding_category'):
-        admin.handle_new_category(update, context)
+        admin.admin_handle_new_category(update, context)
     elif context.user_data.get('charging'):
         customer.handle_charge_account(update, context)
     elif context.user_data.get('adding_agent'):
-        admin.add_agent(update, context)
+        admin.admin_add_agent(update, context)
     elif context.user_data.get('editing_category'):
-        admin.handle_edit_message(update, context)
+        admin.admin_handle_edit_message(update, context)
     else:
-        update.message.reply_text("لطفاً یکی از گزینه‌ها را انتخاب کنید.")
+        update.message.reply_text("لطفاً از منوی اصلی یکی از گزینه‌ها را انتخاب کنید.")

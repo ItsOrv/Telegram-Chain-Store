@@ -4,7 +4,7 @@
     ],
     "users": {
         "6663338157": {
-            "role": "admin",
+            "role": "agent",
             "balance": 0,
             "city": "",
             "cart": {},
@@ -30,12 +30,39 @@
             "city": "",
             "cart": {},
             "orders": []
+        },
+        "1": {
+            "role": "agent",
+            "balance": 0,
+            "city": "",
+            "cart": {},
+            "orders": []
+        },
+        "34": {
+            "role": "agent",
+            "balance": 0,
+            "city": "",
+            "cart": {},
+            "orders": []
         }
     },
     "agents": {
         "1281905482": {
             "products": [
                 1
+            ]
+        },
+        "1": {
+            "products": []
+        },
+        "34": {
+            "products": []
+        },
+        "6663338157": {
+            "products": [
+                2,
+                3,
+                4
             ]
         }
     },
@@ -50,6 +77,39 @@
             "province": "گلستان",
             "city": "گرگان",
             "agent_id": "1281905482"
+        },
+        "2": {
+            "name": "ttttt",
+            "description": "478",
+            "price": 5678,
+            "stock": 4,
+            "sold": 0,
+            "category": "category",
+            "province": "آذربایجان شرقی",
+            "city": "city",
+            "agent_id": "6663338157"
+        },
+        "3": {
+            "name": "tyyyyy",
+            "description": "+88",
+            "price": 689,
+            "stock": 7433,
+            "sold": 0,
+            "category": "category",
+            "province": "مازندران",
+            "city": "city",
+            "agent_id": "6663338157"
+        },
+        "4": {
+            "name": "57",
+            "description": "568",
+            "price": 679,
+            "stock": 5,
+            "sold": 0,
+            "category": "category",
+            "province": "مرکزی",
+            "city": "city",
+            "agent_id": "6663338157"
         }
     }
 }
