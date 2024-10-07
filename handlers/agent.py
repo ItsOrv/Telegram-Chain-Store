@@ -260,9 +260,9 @@ def agent_show_categories(update, context):
 
 def agent_list_my_products(update, context):
     """Display agent's products with options to edit or delete."""
-    
+    '''
     agent_id = update.effective_user.id  # Assuming agent ID is same as Telegram user ID
-    agent_products = get_agent_products(agent_id)  # فانکشن کمکی که محصولات نماینده را از دیتابیس بگیرد
+    agent_products = get_agent_products(agent_id)
 
     if not agent_products:
         update.message.reply_text("شما هیچ محصولی ثبت نشده ندارید.")
@@ -282,7 +282,16 @@ def agent_list_my_products(update, context):
     
     reply_markup = InlineKeyboardMarkup(keyboard)
     update.message.reply_text("لیست محصولات شما:", reply_markup=reply_markup)
+    '''
+    message = "این بخش در اپدیت بعدی اضافه خواهد شد"
 
+    if update.callback_query:
+        update.callback_query.message.reply_text(message)
+        update.callback_query.answer()
+    else:
+        update.message.reply_text(message)
+
+'''
 def agent_edit_product(update, context):
     """Handle editing options for a specific product."""
     query = update.callback_query
@@ -311,7 +320,7 @@ def agent_delete_product(update, context):
     
     query.edit_message_text(f"محصول {product_id} با موفقیت حذف شد.")
 
-
+'''
 
 
 
