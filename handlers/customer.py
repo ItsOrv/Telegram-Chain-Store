@@ -261,10 +261,6 @@ def customer_handle_remove_product(update, context):
 
 
 
-
-
-
-
 # ثبت اولیه سفارش و انتخاب روش پرداخت
 def customer_confirm_order(update, context):
     user_id = update.effective_user.id
@@ -275,23 +271,23 @@ def customer_confirm_order(update, context):
     if cart:
         # محاسبه مبلغ کل
         total_amount = sum(item["price"] * item["quantity"] for item in cart.values())
-        
+
         # ایجاد سفارش جدید
         order_id = create_order(user_id, cart)
         user["orders"].append({
             "order_id": order_id,
-            "products": cart,
+            "products": cart,\
             "status": "در انتظار تایید"
         })
         user["cart"] = {}  # خالی کردن سبد خرید پس از ثبت سفارش
         save_data(data)
         update_user(user_id, user)
-        
+
         # ارسال پیام به ادمین
         admin_id = config.ADMIN_ID
         user_full_name = update.effective_user.full_name
         context.bot.send_message(chat_id=admin_id, text=f"سفارشی از طرف کاربر {user_full_name} (شناسه: {user_id}) در انتظار پرداخت است.")
-        
+
         # نمایش گزینه‌های پرداخت به کاربر
         keyboard = [
             [InlineKeyboardButton("کارت به کارت", callback_data="customer_card_to_card_payment")],
@@ -299,19 +295,12 @@ def customer_confirm_order(update, context):
             [InlineKeyboardButton("پرداخت با موجودی", callback_data="customer_pay_with_balance")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        update.callback_query.message.reply_text(f"سفارش شما با شناسه {order_id} ثبت شد.\n مبلغ کل:{total_amount} تومان.\n لطفاً روش پرداخت خود را انتخاب کنید:", reply_markup=reply_markup)
+
+        update.callback_query.message.reply_text(f"سفارش شما با شناسه {order_id} ثبت شد.\n مبلغ کل: {total_amount} تومان.\n لطفاً روش پرداخت خود را انتخاب کنید:", reply_markup=reply_markup)
     else:
         update.callback_query.message.reply_text("سبد خرید شما خالی است.")
     
     update.callback_query.answer()
-
-
-
-
-
-
-
 
 # پرداخت کارت به کارت
 def customer_card_to_card_payment(update, context):
@@ -319,7 +308,7 @@ def customer_card_to_card_payment(update, context):
     data = load_data()
     user = data["users"].get(str(user_id), {})
     pending_order = next((order for order in user["orders"] if order["status"] == "در انتظار تایید"), None)
-    
+
     if pending_order:
         # نمایش پیام برای دریافت شماره کارت
         payment_id = config.PAYMENT_ID  # این آیدی جایی است که کاربر باید برای دریافت شماره کارت پیام دهد
@@ -343,10 +332,10 @@ def handle_payment_confirmation(update, context):
             [InlineKeyboardButton("لغو", callback_data=f"reject_payment_{order_id}_{user_id}")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        
+
         admin_id = config.ADMIN_ID
         context.bot.send_photo(chat_id=admin_id, photo=photo, caption=f"فیش واریزی از کاربر {user_id} برای سفارش {order_id}:", reply_markup=reply_markup)
-        
+
         update.message.reply_text("فیش واریزی شما ارسال شد و در حال بررسی است.")
         context.user_data['awaiting_card_payment'] = False  # خروج از حالت انتظار فیش واریزی
     else:
@@ -379,7 +368,7 @@ def confirm_payment(user_id, order_id):
     data = load_data()
     user = data["users"][str(user_id)]
     order = next((order for order in user["orders"] if order["order_id"] == order_id), None)
-    
+
     if order:
         order["status"] = "پرداخت شده"
         save_data(data)
@@ -395,181 +384,6 @@ def cancel_order(user_id, order_id):
     user["orders"] = [order for order in user["orders"] if order["order_id"] != order_id]
     save_data(data)
     update_user(user_id, user)
-
-
-
-
-
-
-
-
-
-
-
-
-def customer_pay_with_balance(update, context):
-    print("haha")
-
-
-# بعدا بررسی شود
-# حذف محصول از سبد خرید
-def customer_remove_from_cart(update, context):
-    query = update.callback_query
-    product_id = query.data.split('_')[1]
-    user_id = update.effective_user.id
-    data = load_data()
-    user = data["users"].get(str(user_id), {})
-
-    if product_id in user.get("cart", {}):
-        del user["cart"][product_id]
-        save_data(data)
-        update_user(user_id, user)
-        query.message.reply_text("محصول از سبد خرید شما حذف شد.")
-    else:
-        query.message.reply_text("محصول مورد نظر در سبد خرید شما یافت نشد.")
-    query.answer()
-
-
-
-
-
-
-# دریافت فیش واریزی و تایید سفارش
-def handle_payment_confirmation(update, context):
-    if context.user_data.get('awaiting_payment_confirmation'):
-        if update.message.photo:  # اگر عکس ارسال شد
-            user_id = update.effective_user.id
-            photo = update.message.photo[-1].file_id
-            context.bot.send_photo(chat_id=config.PAYMENT_CONFIRMATION_ID, photo=photo, caption=f"فیش واریزی از کاربر {user_id}")
-            confirm_payment(user_id)
-            update.message.reply_text("فیش واریزی شما ارسال شد و در حال بررسی است.")
-            context.user_data['awaiting_payment_confirmation'] = False
-        else:
-            update.message.reply_text("لطفاً فیش واریزی خود را به صورت عکس ارسال کنید.")
-
-
-# پرداخت کریپتو (به صورت پایه‌ای)
-def customer_crypto_payment(update, context):
-    query = update.callback_query
-    user_id = update.effective_user.id
-    data = load_data()
-    user = data["users"].get(str(user_id), {})
-
-    if user.get("cart"):
-        query.message.reply_text("برای پرداخت با کریپتو، لطفاً به این آدرس مبلغ را ارسال کنید: {config.CRYPTO_PAYMENT_ADDRESS}")
-        context.user_data['awaiting_crypto_payment'] = True
-    else:
-        query.message.reply_text("سبد خرید شما خالی است.")
-    query.answer()
-
-# تایید پرداخت کریپتو
-def handle_crypto_confirmation(update, context):
-    if context.user_data.get('awaiting_crypto_payment'):
-        transaction_id = update.message.text  # فرض می‌کنیم کاربر شناسه تراکنش را ارسال می‌کند
-        if transaction_id:
-            user_id = update.effective_user.id
-            context.bot.send_message(chat_id=config.PAYMENT_CONFIRMATION_ID, text=f"پرداخت کریپتو از کاربر {user_id}: {transaction_id}")
-            confirm_payment(user_id)
-            update.message.reply_text("پرداخت کریپتوی شما دریافت شد و سفارش شما تایید شده است.")
-            context.user_data['awaiting_crypto_payment'] = False
-        else:
-            update.message.reply_text("لطفاً شناسه تراکنش کریپتو را ارسال کنید.")
-
-# تایید نهایی سفارش و ارسال اطلاعات به ادمین‌ها
-def confirm_payment(user_id):
-    data = load_data()
-    user = data["users"].get(str(user_id), {})
-    cart = user.get("cart", {})
-    
-    if cart:
-        order_id = create_order(user_id, cart)
-        user["orders"].append({
-            "order_id": order_id,
-            "products": cart,
-            "status": "پرداخت شده"
-        })
-        user["cart"] = {}  # خالی کردن سبد خرید پس از تایید پرداخت
-        save_data(data)
-        update_user(user_id, user)
-
-        # ارسال پیام به نماینده و ادمین‌ها
-        for product_id in cart:
-            product_info = data["products"][product_id]
-            agent_id = product_info["agent_id"]
-            context.bot.send_message(chat_id=agent_id, text=f"سفارش جدید از کاربر {user_id}: {product_info['name']}")
-
-        # ارسال پیام تایید به کاربر
-        context.bot.send_message(chat_id=user_id, text=f"سفارش شما با شناسه {order_id} تایید شد. با تشکر از خرید شما.")
-        context.bot.send_message(chat_id=config.PAYMENT_CONFIRMATION_ID, text=f"سفارش کاربر {user_id} تایید شد.")
-
-
-
-
-# شارژ حساب
-def customer_charge_account(update, context):
-    if update.message:
-        context.bot.send_message(chat_id=update.effective_chat.id, text="لطفاً مبلغ را وارد کنید.")
-        context.user_data['charging'] = True
-    elif update.callback_query:
-        update.callback_query.message.reply_text("لطفاً مبلغ را وارد کنید.")
-        context.user_data['charging'] = True
-        update.callback_query.answer()
-
-# دریافت مبلغ و شارژ حساب
-# delete this and add to common file
-def handle_message(update, context):
-    user_id = update.effective_user.id
-    if context.user_data.get('charging'):
-        amount = update.message.text
-        if amount.isdigit():
-            charge_user_account(user_id, int(amount))
-            update.message.reply_text(f"حساب شما به مبلغ {amount} تومان شارژ شد.")
-            context.user_data['charging'] = False
-        else:
-            update.message.reply_text("لطفاً مبلغ معتبر وارد کنید.")
-    else:
-        update.message.reply_text("لطفاً یکی از گزینه‌ها را انتخاب کنید.")
-
-# شارژ حساب کاربری
-def charge_user_account(user_id, amount):
-    data = load_data()
-    user = data["users"][str(user_id)]
-    user["balance"] += amount
-    save_data(data)
-    update_user(user_id, user)
-
-# ارتباط با مدیر
-def customer_contact_admin(update, context):
-    message = f"مدیریت ربات: \n {config.PAYMENT_CONFIRMATION_ID}"
-    if update.message:
-        update.message.reply_text(message)
-    elif update.callback_query:
-        update.callback_query.message.reply_text(message)
-        update.callback_query.answer()
-
-
-
-# نمایش خریدهای قبلی
-def customer_previous_orders(update, context):
-    user_id = update.effective_user.id
-
-    data = load_data()
-    user = data["users"].get(str(user_id), {})
-
-    if user.get("orders"):
-        message = "خریدهای قبلی شما:\n"
-        for order in user["orders"]:
-            products = "\n".join([f"- {p['name']} (تعداد: {p['quantity']})" for p in order["products"].values()])
-            message += f"سفارش {order['order_id']} - وضعیت: {order['status']}\n{products}\n"
-    else:
-        message = "شما هیچ خریدی نداشته‌اید."
-
-    if update.message:
-        update.message.reply_text(message)
-    elif update.callback_query:
-        update.callback_query.message.reply_text(message)
-        update.callback_query.answer()
-
 
 """
 - خرید محصول
