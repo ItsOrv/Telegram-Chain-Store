@@ -22,7 +22,7 @@ def customer_menu(update, context):
         update.callback_query.answer()
     else:
         update.message.reply_text(message, reply_markup=reply_markup)
-
+#افزودن سفارش های در انتظار تایید
 #pass
 def customer_buy_product(update, context):
     data = load_data()
@@ -218,7 +218,7 @@ def customer_show_cart(update, context):
         elif update.callback_query:
             update.callback_query.edit_message_text(message)
             update.callback_query.answer()
-
+#اضافه کردن دکمه برگشت در زیر پیام سبد خرید شما خالی است
 #pass
 def customer_handle_add_product(update, context):
     query = update.callback_query
@@ -259,9 +259,9 @@ def customer_handle_remove_product(update, context):
     customer_show_cart(update, context)
     query.answer()
 
+# دکمه رفتن به سبد خرید بعد از پیام محصول به سبد خرید اضافه شد نمایش داده شود
 
-
-# ثبت اولیه سفارش و انتخاب روش پرداخت
+#pass
 def customer_confirm_order(update, context):
     user_id = update.effective_user.id
     data = load_data()
@@ -292,7 +292,8 @@ def customer_confirm_order(update, context):
         keyboard = [
             [InlineKeyboardButton("کارت به کارت", callback_data="customer_card_to_card_payment")],
             [InlineKeyboardButton("پرداخت با کریپتو", callback_data="customer_crypto_payment")],
-            [InlineKeyboardButton("پرداخت با موجودی", callback_data="customer_pay_with_balance")]
+            [InlineKeyboardButton("پرداخت با موجودی", callback_data="customer_pay_with_balance")],
+            [InlineKeyboardButton("لغو", callback_data="customer_menu")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -302,42 +303,57 @@ def customer_confirm_order(update, context):
     
     update.callback_query.answer()
 
-# پرداخت کارت به کارت
+#  پرداخت کارت به کارت
 def customer_card_to_card_payment(update, context):
     user_id = update.effective_user.id
     data = load_data()
     user = data["users"].get(str(user_id), {})
-    pending_order = next((order for order in user["orders"] if order["status"] == "در انتظار تایید"), None)
+    pending_order = next((order for order in user.get("orders", []) if order["status"] == "در انتظار تایید"), None)
 
     if pending_order:
-        # نمایش پیام برای دریافت شماره کارت
-        payment_id = config.PAYMENT_ID  # این آیدی جایی است که کاربر باید برای دریافت شماره کارت پیام دهد
+        # دریافت PAYMENT_ID از تنظیمات
+        payment_id = getattr(config, 'PAYMENT_ID', "@defaultusername")
         total_amount = sum(item["price"] * item["quantity"] for item in pending_order["products"].values())
-        update.message.reply_text(f"لطفاً به آیدی {payment_id} پیام دهید تا شماره کارت دریافت کنید. سپس تصویر فیش واریزی به مبلغ {total_amount} تومان را همینجا ارسال کنید.")
-        context.user_data['awaiting_card_payment'] = True  # حالت انتظار برای دریافت فیش واریزی
-        context.user_data['pending_order_id'] = pending_order["order_id"]  # ذخیره شناسه سفارش در انتظار تایید
+        
+        # نمایش پیام و درخواست ارسال تصویر فیش واریزی
+        message = f"لطفاً به آیدی {payment_id} پیام دهید تا شماره کارت دریافت کنید.\nسپس تصویر فیش واریزی به مبلغ {total_amount} تومان را همینجا ارسال کنید." #مبلغ کل رو هم اینجا به کاربر نشون بده
+        keyboard = [[InlineKeyboardButton("ارسال کردم", callback_data="handle_payment_confirmation")]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
+
+        # ذخیره وضعیت انتظار برای پرداخت کارت به کارت
+        context.user_data['awaiting_card_payment'] = True
+        context.user_data['pending_order_id'] = pending_order["order_id"]
+        context.user_data['awaiting_receipt_photo'] = True
     else:
-        update.message.reply_text("هیچ سفارشی در انتظار تایید پرداخت وجود ندارد.")
+        context.bot.send_message(chat_id=update.effective_chat.id, text="هیچ سفارشی در انتظار تایید پرداخت وجود ندارد.")
+
+
 
 # دریافت فیش واریزی و ارسال به ادمین
 def handle_payment_confirmation(update, context):
-    if context.user_data.get('awaiting_card_payment') and update.message.photo:
+    if context.user_data.get('awaiting_receipt_photo') and update.message.photo:
         user_id = update.effective_user.id
         photo = update.message.photo[-1].file_id  # دریافت فیش واریزی (آخرین عکس)
-        order_id = context.user_data['pending_order_id']
+        order_id = context.user_data.get('pending_order_id')
 
-        # ارسال تصویر فیش به ادمین همراه با دکمه تایید و لغو
-        keyboard = [
-            [InlineKeyboardButton("تایید", callback_data=f"confirm_payment_{order_id}_{user_id}")],
-            [InlineKeyboardButton("لغو", callback_data=f"reject_payment_{order_id}_{user_id}")]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
+        if order_id:
+            # ارسال تصویر فیش به ادمین همراه با دکمه تایید و لغو
+            keyboard = [
+                [InlineKeyboardButton("تایید", callback_data=f"confirm_payment_{order_id}_{user_id}")],
+                [InlineKeyboardButton("لغو", callback_data=f"reject_payment_{order_id}_{user_id}")]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
 
-        admin_id = config.ADMIN_ID
-        context.bot.send_photo(chat_id=admin_id, photo=photo, caption=f"فیش واریزی از کاربر {user_id} برای سفارش {order_id}:", reply_markup=reply_markup)
-
-        update.message.reply_text("فیش واریزی شما ارسال شد و در حال بررسی است.")
-        context.user_data['awaiting_card_payment'] = False  # خروج از حالت انتظار فیش واریزی
+            admin_id = getattr(config, 'ADMIN_ID', None)
+            if admin_id:
+                context.bot.send_photo(chat_id=admin_id, photo=photo, caption=f"فیش واریزی از کاربر {user_id} برای سفارش {order_id}:", reply_markup=reply_markup)
+                context.bot.send_message(chat_id=update.effective_chat.id, text="فیش واریزی شما ارسال شد و در حال بررسی است.")
+                context.user_data['awaiting_receipt_photo'] = False  # غیرفعال کردن حالت انتظار پس از ارسال تصویر
+            else:
+                update.message.reply_text("خطا: آیدی مدیر در تنظیمات مشخص نشده است.")
+        else:
+            update.message.reply_text("خطا در دریافت شناسه سفارش.")
     else:
         update.message.reply_text("لطفاً فیش واریزی خود را به صورت عکس ارسال کنید.")
 
@@ -350,13 +366,11 @@ def handle_admin_decision(update, context):
     user_id = query_data[2]
 
     if action == "confirm_payment":
-        # تایید پرداخت کاربر
         confirm_payment(user_id, order_id)
         context.bot.send_message(chat_id=user_id, text=f"پرداخت شما تایید شد. سفارش شما با شناسه {order_id} در حال پردازش است.")
         query.message.edit_caption(caption=f"فیش واریزی از کاربر {user_id} برای سفارش {order_id}: (تایید شد)")
 
     elif action == "reject_payment":
-        # لغو سفارش
         cancel_order(user_id, order_id)
         context.bot.send_message(chat_id=user_id, text="پرداخت شما تایید نشد. سفارش شما لغو شده است.")
         query.message.edit_caption(caption=f"فیش واریزی از کاربر {user_id} برای سفارش {order_id}: (لغو شد)")
@@ -366,22 +380,22 @@ def handle_admin_decision(update, context):
 # تایید پرداخت و پردازش سفارش
 def confirm_payment(user_id, order_id):
     data = load_data()
-    user = data["users"][str(user_id)]
-    order = next((order for order in user["orders"] if order["order_id"] == order_id), None)
+    user = data["users"].get(str(user_id), {})
+    order = next((order for order in user.get("orders", []) if order["order_id"] == order_id), None)
 
     if order:
         order["status"] = "پرداخت شده"
         save_data(data)
         update_user(user_id, user)
 
-        # اینجا فانکشنی که شما بعداً برای پردازش سفارش خواهید نوشت فراخوانی می‌شود
+        # فراخوانی فانکشنی برای پردازش سفارش (می‌توانید این را سفارشی کنید)
         process_order(order_id)
 
 # لغو سفارش
 def cancel_order(user_id, order_id):
     data = load_data()
-    user = data["users"][str(user_id)]
-    user["orders"] = [order for order in user["orders"] if order["order_id"] != order_id]
+    user = data["users"].get(str(user_id), {})
+    user["orders"] = [order for order in user.get("orders", []) if order["order_id"] != order_id]
     save_data(data)
     update_user(user_id, user)
 
