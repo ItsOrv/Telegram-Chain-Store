@@ -34,8 +34,10 @@ PROVINCES_CITIES = {
     "همدان": ["همدان", "ملایر", "نهاوند", "تویسرکان", "اسدآباد", "کبودرآهنگ", "رزن", "فامنین"],
     "یزد": ["یزد", "میبد", "اردکان", "تفت", "ابرکوه", "مهریز", "بافق", "اشکذر", "خاتم"]
 }
+#pass
 def agent_menu(update, context):
     """Display the main agency menu."""
+
     keyboard = [
         [InlineKeyboardButton("افزودن محصول جدید", callback_data='agent_add_product')],
         [InlineKeyboardButton("لیست محصولات من", callback_data='agent_list_my_products')],
@@ -44,16 +46,17 @@ def agent_menu(update, context):
     message = "به پنل نمایندگی خوش آمدید"
 
     if update.callback_query:
-        update.callback_query.message.delete()  # حذف پیام قبلی
+        update.callback_query.message.delete()
         update.callback_query.message.reply_text(message, reply_markup=reply_markup)
         update.callback_query.answer()
     else:
         update.message.reply_text(message, reply_markup=reply_markup)
 
+#pass
 def agent_add_product(update, context):
     """Request and process new product details from the agent."""
-    
-    # Initial start, request product name
+
+    # Step 1: Request product name
     if 'adding_product' not in context.user_data:
         keyboard = [[InlineKeyboardButton("لغو", callback_data='agent_menu')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -61,7 +64,7 @@ def agent_add_product(update, context):
         context.user_data['adding_product'] = True
 
         if update.callback_query:
-            update.callback_query.message.delete()  # حذف پیام قبلی
+            update.callback_query.message.delete()
             update.callback_query.message.reply_text(message, reply_markup=reply_markup)
             update.callback_query.answer()
         else:
@@ -90,37 +93,41 @@ def agent_add_product(update, context):
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text("موجودی محصول را وارد کنید.", reply_markup=reply_markup)
         else:
-            update.message.reply_text("لطفاً یک قیمت معتبر وارد کنید.")  # Error for invalid price
+            update.message.reply_text("لطفاً یک قیمت معتبر وارد کنید.")
     
     # Step 4: Request product stock
     elif 'product_stock' not in context.user_data:
         stock_text = update.message.text
         if stock_text.isdigit():  # Ensure stock is a positive number
             context.user_data['product_stock'] = int(stock_text)
-            agent_show_provinces(update, context)  # نمایش لیست استان‌ها
+            agent_show_provinces(update, context)  # Provinces
         else:
-            update.message.reply_text("لطفاً یک عدد معتبر برای موجودی وارد کنید.")  # Error for invalid stock
+            update.message.reply_text("لطفاً یک عدد معتبر برای موجودی وارد کنید.")
     
     # Step 5: Province and city selection (handled by agent_show_provinces/agent_show_cities)
     elif 'current_city' in context.user_data:
-        agent_save_new_product(update, context)  # Save the product after selecting city
+        agent_save_new_product(update, context)
 
+#pass
 def agent_show_provinces(update, context):
     """Display the list of provinces for selection."""
+
     keyboard = [[InlineKeyboardButton(province, callback_data=f"agent_province_{province}")] for province in PROVINCES_CITIES.keys()]
     keyboard.append([InlineKeyboardButton("بازگشت به منوی اصلی", callback_data='agent_menu')])
     reply_markup = InlineKeyboardMarkup(keyboard)
     message = "لطفاً استان خود را انتخاب کنید:"
 
     if update.callback_query:
-        update.callback_query.message.delete()  # حذف پیام قبلی
+        update.callback_query.message.delete()
         update.callback_query.message.reply_text(message, reply_markup=reply_markup)
         update.callback_query.answer()
     else:
         update.message.reply_text(message, reply_markup=reply_markup)
 
+#pass
 def agent_handle_province_selection(update, context):
     """Manage the province selection by the agent."""
+
     try:
         province = update.callback_query.data.split('_')[2]
         if province in PROVINCES_CITIES:
@@ -134,8 +141,10 @@ def agent_handle_province_selection(update, context):
         update.callback_query.message.reply_text("مشکلی در انتخاب استان به وجود آمد.")
     update.callback_query.answer()
 
+#pass
 def agent_show_cities(update, context, province):
     """Display the cities of the selected province."""
+
     if province in PROVINCES_CITIES:
         cities = PROVINCES_CITIES[province]
         keyboard = [[InlineKeyboardButton(city, callback_data=f"agent_city_{city}")] for city in cities]
@@ -149,23 +158,29 @@ def agent_show_cities(update, context, province):
     update.callback_query.message.delete()
     update.callback_query.answer()
 
+#pass
 def agent_handle_city_selection(update, context):
     """Manage the city selection by the agent and direct to category selection."""
+
     city = update.callback_query.data.split('_')[1]
     context.user_data['current_city'] = city
     agent_show_categories(update, context)
     update.callback_query.answer()
 
+#pass
 def agent_handle_category_selection(update, context):
     """Manage the category selection by the agent and save it."""
+
     category = update.callback_query.data.split('_')[1]
     context.user_data['product_category'] = category
     # Now that we have all the product information, save the product
     agent_save_new_product(update, context)
     update.callback_query.answer()
 
+#pass
 def agent_save_new_product(update, context):
     """Save the new product in the database."""
+
     data = load_data()
 
     # Get product information from context.user_data
@@ -220,16 +235,20 @@ def agent_save_new_product(update, context):
     context.user_data.clear()
     agent_menu(update, context)
 
+#pass
 def agent_find_next_product_id(data):
     """Find the first available product ID."""
+
     used_product_ids = set(map(int, data.get('products', {}).keys()))
     product_id = 1
     while product_id in used_product_ids:
         product_id += 1
     return product_id
 
+#pass
 def agent_show_categories(update, context):
     """Display the available categories as inline buttons."""
+
     data = load_data()
     categories = data.get('categories', [])
 
@@ -240,11 +259,12 @@ def agent_show_categories(update, context):
     message = "لطفاً یک دسته‌بندی برای محصول انتخاب کنید:"
 
     if update.callback_query:
-        update.callback_query.message.delete()  # حذف پیام قبلی
+        update.callback_query.message.delete()
         update.callback_query.message.reply_text(message, reply_markup=reply_markup)
         update.callback_query.answer()
     else:
         update.message.reply_text(message, reply_markup=reply_markup)
+
 
 def agent_list_my_products(update, context):
     """Display agent's products with options to edit or delete."""
@@ -279,6 +299,7 @@ def agent_list_my_products(update, context):
     else:
         update.message.reply_text(message)
 
+
 def agent_edit_product(update, context):
     '''
     """Handle editing options for a specific product."""
@@ -299,6 +320,7 @@ def agent_edit_product(update, context):
     query.edit_message_text(f"ویرایش محصول {product_id}:", reply_markup=reply_markup)
     '''
 
+
 def agent_delete_product(update, context):
     '''
     """Handle product deletion confirmation."""
@@ -315,14 +337,14 @@ def agent_delete_product(update, context):
 """
 check list:
 - مدیریت محصولات
-افزودن محصول جدید \\
-    انتخاب نام \\
-    انتخاب توضیحات \\
-    انتخاب قیمت \\
-    انتخاب موجودی \\
-    انتخاب استان \\
-    انتخاب شهر \\
-    انتخاب دسته بندی \\
+افزودن محصول جدید
+    انتخاب نام
+    انتخاب توضیحات
+    انتخاب قیمت
+    انتخاب موجودی
+    انتخاب استان
+    انتخاب شهر
+    انتخاب دسته بندی
 
 لیست محصولات من
 (نمایش محصولات در دکمه شیشه ای همراه دکمه های حذف و ادیت)
