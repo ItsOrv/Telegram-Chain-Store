@@ -1,10 +1,12 @@
 {
     "categories": [
-        "تست"
+        "تست ۱",
+        "تست ۲",
+        "تست ۳"
     ],
     "users": {
         "6663338157": {
-            "role": "agent",
+            "role": "admin",
             "balance": 0,
             "city": "",
             "cart": {},
@@ -15,63 +17,7 @@
             "balance": 0,
             "city": "",
             "cart": {},
-            "orders": [
-                {
-                    "order_id": 1,
-                    "products": {
-                        "2": {
-                            "name": "ttttt",
-                            "price": 5678,
-                            "quantity": 2
-                        }
-                    },
-                    "status": "در انتظار تایید"
-                },
-                {
-                    "order_id": 2,
-                    "products": {
-                        "3": {
-                            "name": "tyyyyy",
-                            "price": 689,
-                            "quantity": 2
-                        }
-                    },
-                    "status": "در انتظار تایید"
-                },
-                {
-                    "order_id": 3,
-                    "products": {
-                        "1": {
-                            "name": "test",
-                            "price": 50000,
-                            "quantity": 3
-                        }
-                    },
-                    "status": "در انتظار تایید"
-                },
-                {
-                    "order_id": 4,
-                    "products": {
-                        "2": {
-                            "name": "ttttt",
-                            "price": 5678,
-                            "quantity": 1
-                        }
-                    },
-                    "status": "در انتظار تایید"
-                },
-                {
-                    "order_id": 5,
-                    "products": {
-                        "3": {
-                            "name": "tyyyyy",
-                            "price": 689,
-                            "quantity": 1
-                        }
-                    },
-                    "status": "در انتظار تایید"
-                }
-            ]
+            "orders": []
         },
         "1281905482": {
             "role": "agent",
@@ -85,87 +31,6 @@
             "balance": 0,
             "city": "",
             "cart": {},
-            "orders": [
-                {
-                    "order_id": 1,
-                    "products": {
-                        "1": {
-                            "name": "test",
-                            "price": 50000,
-                            "quantity": 1
-                        }
-                    },
-                    "status": "تأیید شده"
-                },
-                {
-                    "order_id": 2,
-                    "products": {
-                        "1": {
-                            "name": "test",
-                            "price": 50000,
-                            "quantity": 1
-                        }
-                    },
-                    "status": "در انتظار تایید"
-                },
-                {
-                    "order_id": 3,
-                    "products": {
-                        "1": {
-                            "name": "test",
-                            "price": 50000,
-                            "quantity": 1
-                        }
-                    },
-                    "status": "در انتظار تایید"
-                },
-                {
-                    "order_id": 4,
-                    "products": {
-                        "1": {
-                            "name": "test",
-                            "price": 50000,
-                            "quantity": 1
-                        }
-                    },
-                    "status": "در انتظار تایید"
-                },
-                {
-                    "order_id": 5,
-                    "products": {
-                        "1": {
-                            "name": "test",
-                            "price": 50000,
-                            "quantity": 2
-                        }
-                    },
-                    "status": "در انتظار تایید"
-                },
-                {
-                    "order_id": 6,
-                    "products": {
-                        "1": {
-                            "name": "test",
-                            "price": 50000,
-                            "quantity": 1
-                        }
-                    },
-                    "status": "در انتظار تایید"
-                }
-            ]
-        },
-        "1": {
-            "role": "agent",
-            "balance": 0,
-            "city": "",
-            "cart": {},
-            "orders": []
-        },
-        "34": {
-            "role": "agent",
-            "balance": 0,
-            "city": "",
-            "cart": {},
             "orders": []
         }
     },
@@ -175,64 +40,21 @@
                 1
             ]
         },
-        "1": {
-            "products": []
-        },
-        "34": {
-            "products": []
-        },
         "6663338157": {
-            "products": [
-                2,
-                3,
-                4
-            ]
+            "products": []
         }
     },
     "products": {
         "1": {
-            "name": "test",
-            "description": "t",
-            "price": 50000,
-            "stock": 9999,
+            "name": "test1",
+            "description": "de test1",
+            "price": 10000,
+            "stock": 25,
             "sold": 0,
-            "category": "آلت",
+            "category": "category",
             "province": "گلستان",
-            "city": "گرگان",
+            "city": "city",
             "agent_id": "1281905482"
-        },
-        "2": {
-            "name": "ttttt",
-            "description": "478",
-            "price": 5678,
-            "stock": 4,
-            "sold": 0,
-            "category": "category",
-            "province": "آذربایجان شرقی",
-            "city": "city",
-            "agent_id": "6663338157"
-        },
-        "3": {
-            "name": "tyyyyy",
-            "description": "+88",
-            "price": 689,
-            "stock": 7433,
-            "sold": 0,
-            "category": "category",
-            "province": "مازندران",
-            "city": "city",
-            "agent_id": "6663338157"
-        },
-        "4": {
-            "name": "57",
-            "description": "568",
-            "price": 679,
-            "stock": 5,
-            "sold": 0,
-            "category": "category",
-            "province": "مرکزی",
-            "city": "city",
-            "agent_id": "6663338157"
         }
     }
 }

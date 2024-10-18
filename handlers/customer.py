@@ -303,7 +303,7 @@ def customer_confirm_order(update, context):
     
     update.callback_query.answer()
 
-#  پرداخت کارت به کارت
+#pass
 def customer_card_to_card_payment(update, context):
     user_id = update.effective_user.id
     data = load_data()
@@ -317,7 +317,7 @@ def customer_card_to_card_payment(update, context):
         
         # نمایش پیام و درخواست ارسال تصویر فیش واریزی
         message = f"لطفاً به آیدی {payment_id} پیام دهید تا شماره کارت دریافت کنید.\nسپس تصویر فیش واریزی به مبلغ {total_amount} تومان را همینجا ارسال کنید." #مبلغ کل رو هم اینجا به کاربر نشون بده
-        keyboard = [[InlineKeyboardButton("ارسال کردم", callback_data="handle_payment_confirmation")]]
+        keyboard = [[InlineKeyboardButton("کنسل کردن", callback_data="customer_menu")]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
 
@@ -328,9 +328,7 @@ def customer_card_to_card_payment(update, context):
     else:
         context.bot.send_message(chat_id=update.effective_chat.id, text="هیچ سفارشی در انتظار تایید پرداخت وجود ندارد.")
 
-
-
-# دریافت فیش واریزی و ارسال به ادمین
+#pass
 def handle_payment_confirmation(update, context):
     if context.user_data.get('awaiting_receipt_photo') and update.message.photo:
         user_id = update.effective_user.id
@@ -351,26 +349,31 @@ def handle_payment_confirmation(update, context):
                 context.bot.send_message(chat_id=update.effective_chat.id, text="فیش واریزی شما ارسال شد و در حال بررسی است.")
                 context.user_data['awaiting_receipt_photo'] = False  # غیرفعال کردن حالت انتظار پس از ارسال تصویر
             else:
-                update.message.reply_text("خطا: آیدی مدیر در تنظیمات مشخص نشده است.")
+                update.message.reply_text("خطای آیدی مدیر.")
         else:
             update.message.reply_text("خطا در دریافت شناسه سفارش.")
     else:
-        update.message.reply_text("لطفاً فیش واریزی خود را به صورت عکس ارسال کنید.")
+        update.message.reply_text("خطایی در پردازش تصویر فیش واریزی اتفاق افتاد.")
 
-# تایید یا لغو پرداخت توسط ادمین
+
 def handle_admin_decision(update, context):
+    print("handling pass")
     query = update.callback_query
     query_data = query.data.split('_')
-    action = query_data[0]  # 'confirm_payment' یا 'reject_payment'
-    order_id = query_data[1]
-    user_id = query_data[2]
+    #print(query_data)
+    action = query_data[0]
+    #print(action)  # 'confirm_payment' یا 'reject_payment'
+    order_id = query_data[2]
+    #print(order_id)
+    user_id = query_data[3]
+    #print(user_id)
 
-    if action == "confirm_payment":
+    if action == "confirm":
         confirm_payment(user_id, order_id)
         context.bot.send_message(chat_id=user_id, text=f"پرداخت شما تایید شد. سفارش شما با شناسه {order_id} در حال پردازش است.")
         query.message.edit_caption(caption=f"فیش واریزی از کاربر {user_id} برای سفارش {order_id}: (تایید شد)")
 
-    elif action == "reject_payment":
+    elif action == "reject":
         cancel_order(user_id, order_id)
         context.bot.send_message(chat_id=user_id, text="پرداخت شما تایید نشد. سفارش شما لغو شده است.")
         query.message.edit_caption(caption=f"فیش واریزی از کاربر {user_id} برای سفارش {order_id}: (لغو شد)")
@@ -388,16 +391,58 @@ def confirm_payment(user_id, order_id):
         save_data(data)
         update_user(user_id, user)
 
+        # آماده کردن لیست خرید برای ارسال به ادمین
+        products_list = []
+        for product in order["products"]:
+            product_name = product["name"]
+            agent_id = product.get("agent_id")  # شناسه نماینده محصول
+            products_list.append(f"محصول: {product_name}, نماینده: {agent_id}")
+
+        # تبدیل لیست محصولات به رشته برای پیام
+        product_info = "\n".join(products_list)
+
+        # ارسال پیام به ادمین با لیست محصولات
+        admin_id = getattr(config, 'ADMIN_ID', None)
+        if admin_id:
+            context.bot.send_message(
+                chat_id=admin_id,
+                text=f"سفارش {order_id} تایید شد.\nلیست محصولات:\n{product_info}"
+            )
+
         # فراخوانی فانکشنی برای پردازش سفارش (می‌توانید این را سفارشی کنید)
         process_order(order_id)
+
 
 # لغو سفارش
 def cancel_order(user_id, order_id):
     data = load_data()
     user = data["users"].get(str(user_id), {})
-    user["orders"] = [order for order in user.get("orders", []) if order["order_id"] != order_id]
-    save_data(data)
-    update_user(user_id, user)
+    order = next((order for order in user.get("orders", []) if order["order_id"] == order_id), None)
+
+    if order:
+        # آماده کردن لیست خرید برای ارسال به ادمین
+        products_list = []
+        for product in order["products"]:
+            product_name = product["name"]
+            agent_id = product.get("agent_id")  # شناسه نماینده محصول
+            products_list.append(f"محصول: {product_name}, نماینده: {agent_id}")
+
+        # تبدیل لیست محصولات به رشته برای پیام
+        product_info = "\n".join(products_list)
+
+        # ارسال پیام به ادمین با لیست محصولات
+        admin_id = getattr(config, 'ADMIN_ID', None)
+        if admin_id:
+            context.bot.send_message(
+                chat_id=admin_id,
+                text=f"سفارش {order_id} لغو شد.\nلیست محصولات:\n{product_info}"
+            )
+
+        # حذف سفارش از لیست کاربر
+        user["orders"] = [o for o in user.get("orders", []) if o["order_id"] != order_id]
+        save_data(data)
+        update_user(user_id, user)
+
 
 """
 - خرید محصول

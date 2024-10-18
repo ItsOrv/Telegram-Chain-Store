@@ -34,7 +34,6 @@ PROVINCES_CITIES = {
     "همدان": ["همدان", "ملایر", "نهاوند", "تویسرکان", "اسدآباد", "کبودرآهنگ", "رزن", "فامنین"],
     "یزد": ["یزد", "میبد", "اردکان", "تفت", "ابرکوه", "مهریز", "بافق", "اشکذر", "خاتم"]
 }
-#pass
 def agent_menu(update, context):
     """Display the main agency menu."""
     keyboard = [
@@ -51,7 +50,6 @@ def agent_menu(update, context):
     else:
         update.message.reply_text(message, reply_markup=reply_markup)
 
-#pass
 def agent_add_product(update, context):
     """Request and process new product details from the agent."""
     
@@ -107,7 +105,6 @@ def agent_add_product(update, context):
     elif 'current_city' in context.user_data:
         agent_save_new_product(update, context)  # Save the product after selecting city
 
-#pass
 def agent_show_provinces(update, context):
     """Display the list of provinces for selection."""
     keyboard = [[InlineKeyboardButton(province, callback_data=f"agent_province_{province}")] for province in PROVINCES_CITIES.keys()]
@@ -122,7 +119,6 @@ def agent_show_provinces(update, context):
     else:
         update.message.reply_text(message, reply_markup=reply_markup)
 
-#pass
 def agent_handle_province_selection(update, context):
     """Manage the province selection by the agent."""
     try:
@@ -138,7 +134,6 @@ def agent_handle_province_selection(update, context):
         update.callback_query.message.reply_text("مشکلی در انتخاب استان به وجود آمد.")
     update.callback_query.answer()
 
-#pass
 def agent_show_cities(update, context, province):
     """Display the cities of the selected province."""
     if province in PROVINCES_CITIES:
@@ -154,7 +149,6 @@ def agent_show_cities(update, context, province):
     update.callback_query.message.delete()
     update.callback_query.answer()
 
-#pass
 def agent_handle_city_selection(update, context):
     """Manage the city selection by the agent and direct to category selection."""
     city = update.callback_query.data.split('_')[1]
@@ -162,7 +156,6 @@ def agent_handle_city_selection(update, context):
     agent_show_categories(update, context)
     update.callback_query.answer()
 
-#pass
 def agent_handle_category_selection(update, context):
     """Manage the category selection by the agent and save it."""
     category = update.callback_query.data.split('_')[1]
@@ -171,7 +164,6 @@ def agent_handle_category_selection(update, context):
     agent_save_new_product(update, context)
     update.callback_query.answer()
 
-#pass
 def agent_save_new_product(update, context):
     """Save the new product in the database."""
     data = load_data()
@@ -225,11 +217,9 @@ def agent_save_new_product(update, context):
         f"شهر: {data['products'][product_id]['city']}\n"
     )
     update.callback_query.message.reply_text(product_details)
-    update.callback_query.message.delete()
     context.user_data.clear()
     agent_menu(update, context)
 
-#pass
 def agent_find_next_product_id(data):
     """Find the first available product ID."""
     used_product_ids = set(map(int, data.get('products', {}).keys()))
@@ -238,7 +228,6 @@ def agent_find_next_product_id(data):
         product_id += 1
     return product_id
 
-#pass
 def agent_show_categories(update, context):
     """Display the available categories as inline buttons."""
     data = load_data()
@@ -256,7 +245,6 @@ def agent_show_categories(update, context):
         update.callback_query.answer()
     else:
         update.message.reply_text(message, reply_markup=reply_markup)
-
 
 def agent_list_my_products(update, context):
     """Display agent's products with options to edit or delete."""
@@ -291,7 +279,6 @@ def agent_list_my_products(update, context):
     else:
         update.message.reply_text(message)
 
-
 def agent_edit_product(update, context):
     '''
     """Handle editing options for a specific product."""
@@ -312,7 +299,6 @@ def agent_edit_product(update, context):
     query.edit_message_text(f"ویرایش محصول {product_id}:", reply_markup=reply_markup)
     '''
 
-
 def agent_delete_product(update, context):
     '''
     """Handle product deletion confirmation."""
@@ -324,8 +310,6 @@ def agent_delete_product(update, context):
     
     query.edit_message_text(f"محصول {product_id} با موفقیت حذف شد.")
     '''
-
-    
 
 
 """

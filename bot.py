@@ -59,7 +59,7 @@ def main():
     #notpass
     dp.add_handler(CallbackQueryHandler(customer.handle_payment_confirmation, pattern='handle_payment_confirmation'))
     dp.add_handler(CallbackQueryHandler(customer.handle_admin_decision, pattern='handle_admin_decision'))
-    dp.add_handler(CallbackQueryHandler(customer.confirm_payment, pattern='confirm_payment'))
+    dp.add_handler(CallbackQueryHandler(customer.handle_admin_decision, pattern=r'^confirm_payment_\d+_\d+$'))
     dp.add_handler(CallbackQueryHandler(customer.cancel_order, pattern='cancel_order'))
     dp.add_handler(MessageHandler(Filters.photo, customer.handle_payment_confirmation))
 

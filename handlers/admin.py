@@ -59,7 +59,7 @@ def admin_add_category(update, context):
         update.callback_query.answer()
 
 #pass
-def handle_new_category(update, context):
+def admin_handle_new_category(update, context):
     """افزودن دسته‌بندی جدید."""
     if context.user_data.get('adding_category'):
         new_category = update.message.text.strip()
@@ -104,7 +104,7 @@ def admin_edit_category(update, context):
     query.answer()
 
 #pass
-def handle_edit_message(update, context):
+def admin_handle_edit_message(update, context):
     """ویرایش نام دسته‌بندی."""
     if 'editing_category' in context.user_data:
         old_category = context.user_data['editing_category']
