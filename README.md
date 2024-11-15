@@ -1,3 +1,4 @@
+# IT'S NOT READY, DON'T USE
 # Telegram Chain Store Bot
 
 ## Overview
