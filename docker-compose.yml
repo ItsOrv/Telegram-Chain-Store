@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # Bot application service
+  telegram-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: telegram-chain-store-bot
+    restart: unless-stopped
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      # App Settings
+      - DEBUG=False
+      - LOG_LEVEL=INFO
+      
+      # Telegram Settings (use environment variables in production)
+      - API_ID=${API_ID}
+      - API_HASH=${API_HASH}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - BOT_USERNAME=${BOT_USERNAME}
+      - HEAD_ADMIN_ID=${HEAD_ADMIN_ID}
+      - SUPPORT_USERNAME=${SUPPORT_USERNAME}
+      - SUPPORT_ID=${SUPPORT_ID}
+      - PAYMENT_GATEWAY_TOKEN=${PAYMENT_GATEWAY_TOKEN}
+      
+      # Database Settings
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      
+      # Redis Settings
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_SSL=False
+      
+      # Security Settings
+      - SECRET_KEY=${SECRET_KEY}
+      - PASSWORD_MIN_LENGTH=8
+      - TOKEN_EXPIRE_MINUTES=60
+      
+      # Crypto Settings
+      - CRYPTO_WALLET_ADDRESS=${CRYPTO_WALLET_ADDRESS}
+      - CRYPTO_NETWORK=TRC20
+    volumes:
+      - ./logs:/app/logs
+      - ./bot_session.session:/app/bot_session.session
+    networks:
+      - telegram-bot-network
+
+  # MySQL Database service
+  mysql:
+    image: mysql:8.0
+    container_name: telegram-chain-store-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database_setup.sql:/docker-entrypoint-initdb.d/database_setup.sql
+    ports:
+      - "3306:3306"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - telegram-bot-network
+
+  # Redis cache service
+  redis:
+    image: redis:alpine
+    container_name: telegram-chain-store-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - telegram-bot-network
+
+volumes:
+  mysql-data:
+  redis-data:
+
+networks:
+  telegram-bot-network:
+    driver: bridge
