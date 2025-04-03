@@ -38,7 +38,6 @@ class Settings(BaseSettings):
     DB_HOST: str = "localhost"
     DB_PORT: int = 3306
     DB_USER: str
-    DB_PASSWORD: str
     DB_NAME: str
     DB_CHARSET: str = "utf8mb4"
     DB_POOL_SIZE: int = 5
@@ -47,8 +46,7 @@ class Settings(BaseSettings):
     
     @property
     def DATABASE_URL(self) -> str:
-        password = urllib.parse.quote_plus(self.DB_PASSWORD)
-        return f"mysql+mysqlconnector://{self.DB_USER}:{password}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}?charset={self.DB_CHARSET}"
+        return f"mysql+mysqlconnector://{self.DB_USER}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}?charset={self.DB_CHARSET}"
     
     # Redis Settings
     REDIS_HOST: str = "127.0.0.1"  # Change from localhost to 127.0.0.1
@@ -67,7 +65,6 @@ class Settings(BaseSettings):
     
     # Rate Limiting
     RATE_LIMIT_REQUESTS: int = 5
-    RATE_LIMIT_WINDOW: int = 60
     
     # Crypto Settings
     CRYPTO_WALLET_ADDRESS: str

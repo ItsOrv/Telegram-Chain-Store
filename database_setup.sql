@@ -13,9 +13,9 @@ CREATE DATABASE chainstore_db
 CHARACTER SET utf8mb4 
 COLLATE utf8mb4_unicode_ci;
 
--- Create user with strong password and native password authentication
+-- Create user with auth_socket authentication
 CREATE USER 'chainstore_user'@'localhost' 
-IDENTIFIED WITH mysql_native_password BY 'V24aDAsda!!@xAKLAsSsx';
+IDENTIFIED WITH auth_socket;
 
 -- Grant only necessary privileges
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, REFERENCES, INDEX, ALTER, 

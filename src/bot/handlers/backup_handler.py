@@ -150,7 +150,6 @@ class BackupHandler:
                 '-h', self.settings.DB_HOST,
                 '-P', str(self.settings.DB_PORT),
                 '-u', self.settings.DB_USER,
-                f'-p{self.settings.DB_PASSWORD}',
                 self.settings.DB_NAME,
                 f'--result-file={backup_sql}'
             ]
