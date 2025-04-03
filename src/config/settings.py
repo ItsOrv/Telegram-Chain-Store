@@ -38,15 +38,21 @@ class Settings(BaseSettings):
     DB_HOST: str = "localhost"
     DB_PORT: int = 3306
     DB_USER: str
+    DB_PASSWORD: str = ""  # خالی برای auth_socket
     DB_NAME: str
     DB_CHARSET: str = "utf8mb4"
     DB_POOL_SIZE: int = 5
     DB_POOL_TIMEOUT: int = 30
     DB_MAX_OVERFLOW: int = 10
+    DB_AUTH_SOCKET: bool = True  # فعال کردن auth_socket
     
     @property
     def DATABASE_URL(self) -> str:
-        return f"mysql+mysqlconnector://{self.DB_USER}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}?charset={self.DB_CHARSET}"
+        if self.DB_AUTH_SOCKET:
+            return f"mysql+pymysql://{self.DB_USER}@localhost/{self.DB_NAME}?unix_socket=/var/run/mysqld/mysqld.sock&charset={self.DB_CHARSET}"
+        else:
+            password = urllib.parse.quote_plus(self.DB_PASSWORD)
+            return f"mysql+pymysql://{self.DB_USER}:{password}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}?charset={self.DB_CHARSET}"
     
     # Redis Settings
     REDIS_HOST: str = "127.0.0.1"  # Change from localhost to 127.0.0.1

@@ -142,12 +142,37 @@ src/
    - اطلاعات Redis
    - تنظیمات امنیتی
 
-### راه‌اندازی پایگاه داده
-1. ایجاد پایگاه داده با احراز هویت auth_socket:
+### Automated Database Setup
+For automated database setup, you can use the `setup_database.py` script. This script automates all database setup steps and properly handles errors:
+
+1. Using auth_socket (recommended):
+   ```bash
+   python scripts/setup_database.py --auth-socket
+   ```
+
+2. Using password authentication:
+   ```bash
+   python scripts/setup_database.py --password-auth
+   ```
+
+This script automatically:
+- Creates the database
+- Creates the required user
+- Grants necessary permissions
+- Updates the `.env` file with correct database settings
+- Runs Alembic migrations
+
+For help and additional options:
+```bash
+python scripts/setup_database.py --help
+```
+
+### Manual Database Setup (Legacy Method)
+1. Create database with auth_socket authentication:
    ```bash
    mysql -u root -p < database_setup.sql
    ```
-2. اجرای مایگریشن‌ها:
+2. Run migrations:
    ```bash
    alembic upgrade head
    ```

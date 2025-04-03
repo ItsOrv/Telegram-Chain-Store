@@ -1,0 +1,56 @@
+2025-04-03 12:21:03,167 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-03 12:21:14,458 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-03 12:21:14,459 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-03 12:21:14,459 - database_setup - INFO - Creating database and user...
+2025-04-03 12:21:14,460 - database_setup - INFO - Connected to MySQL using auth_socket.
+2025-04-03 12:21:14,465 - database_setup - INFO - Database `chainstore_db` created successfully.
+2025-04-03 12:21:14,469 - database_setup - INFO - User `chainstore_user` created successfully with auth_socket.
+2025-04-03 12:21:14,474 - database_setup - INFO - Required privileges granted to user `chainstore_user`.
+2025-04-03 12:21:14,475 - database_setup - INFO - Updating .env file...
+2025-04-03 12:21:14,475 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-03 12:21:14,476 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-03 12:21:14,476 - database_setup - INFO - Testing connection to database with new user...
+2025-04-03 12:21:14,480 - database_setup - ERROR - Error connecting to database with user chainstore_user.
+2025-04-03 12:24:12,010 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-03 12:24:12,015 - database_setup - INFO - Auto mode: Using default passwords
+2025-04-03 12:24:12,015 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-03 12:24:12,017 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-03 12:24:12,017 - database_setup - INFO - Creating database and user...
+2025-04-03 12:24:12,018 - database_setup - INFO - Connected to MySQL using auth_socket.
+2025-04-03 12:24:12,024 - database_setup - INFO - Database `chainstore_db` created successfully.
+2025-04-03 12:24:12,028 - database_setup - INFO - User `chainstore_user` created successfully with auth_socket.
+2025-04-03 12:24:12,032 - database_setup - INFO - Required privileges granted to user `chainstore_user`.
+2025-04-03 12:24:12,032 - database_setup - INFO - Updating .env file...
+2025-04-03 12:24:12,034 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-03 12:24:12,035 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-03 12:24:12,035 - database_setup - INFO - Testing connection to database with new user...
+2025-04-03 12:24:12,039 - database_setup - ERROR - Error connecting to database with user chainstore_user.
+2025-04-03 12:26:23,087 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-03 12:26:23,092 - database_setup - INFO - Auto mode: Using default passwords
+2025-04-03 12:26:23,093 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-03 12:26:23,095 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-03 12:26:23,096 - database_setup - INFO - Creating database and user...
+2025-04-03 12:26:23,096 - database_setup - INFO - Connected to MySQL using auth_socket.
+2025-04-03 12:26:23,101 - database_setup - ERROR - Unexpected error: name 'args' is not defined
+Traceback (most recent call last):
+  File "/root/Telegram-Chain-Store/scripts/setup_database.py", line 417, in <module>
+    main()
+  File "/root/Telegram-Chain-Store/scripts/setup_database.py", line 384, in main
+    if not create_database(mysql_config):
+  File "/root/Telegram-Chain-Store/scripts/setup_database.py", line 241, in create_database
+    if args.auto or args.password_auth:
+NameError: name 'args' is not defined
+2025-04-03 12:27:34,940 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-03 12:27:34,945 - database_setup - INFO - Auto mode: Using default passwords
+2025-04-03 12:27:34,945 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-03 12:27:34,946 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-03 12:27:34,947 - database_setup - INFO - Creating database and user...
+2025-04-03 12:27:34,948 - database_setup - INFO - Connected to MySQL using auth_socket.
+2025-04-03 12:27:34,967 - database_setup - INFO - User `chainstore_user` created successfully with password authentication.
+2025-04-03 12:27:34,969 - database_setup - INFO - Updating .env file...
+2025-04-03 12:27:34,969 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-03 12:27:34,970 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-03 12:27:34,970 - database_setup - INFO - Testing connection to database with new user...
+2025-04-03 12:27:34,985 - database_setup - INFO - Successfully connected to MySQL with user chainstore_user using password authentication.
+2025-04-03 12:27:34,987 - database_setup - INFO - Running Alembic migrations...
+2025-04-03 12:27:34,987 - database_setup - INFO - Starting Alembic migrations...

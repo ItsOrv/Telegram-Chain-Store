@@ -1,8 +1,0 @@
-2025-03-17 15:40:16 - test_bot - INFO - Initializing TestBot
-2025-03-17 15:40:16 - test_bot - INFO - Starting user interaction simulation
-2025-03-17 15:40:16 - test_bot - INFO - User 123456789 - REGISTRATION - Details: {"username": "test_user", "timestamp": "2025-03-17T15:40:16.239887"}
-2025-03-17 15:40:16 - test_bot - INFO - User 123456789 - BUTTON_CLICK - Details: {"button": "start_shopping", "timestamp": "2025-03-17T15:40:16.240023"}
-2025-03-17 15:40:16 - test_bot - INFO - User 123456789 - VIEW_PRODUCT - Details: {"product_id": 42, "product_name": "Test Product", "timestamp": "2025-03-17T15:40:16.240122"}
-2025-03-17 15:40:16 - test_bot - INFO - User 123456789 - ADD_TO_CART - Details: {"product_id": 42, "quantity": 2, "timestamp": "2025-03-17T15:40:16.240211"}
-2025-03-17 15:40:16 - test_bot - INFO - User 123456789 - CHECKOUT - Details: {"cart_total": 100, "payment_method": "crypto", "timestamp": "2025-03-17T15:40:16.240294"}
-2025-03-17 15:40:16 - test_bot - INFO - User interaction simulation completed
