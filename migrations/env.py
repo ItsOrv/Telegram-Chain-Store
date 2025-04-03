@@ -26,8 +26,11 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 def get_url():
-    password = urllib.parse.quote_plus(settings.DB_PASSWORD)
-    return f"mysql+pymysql://{settings.DB_USER}:{password}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}?charset=utf8mb4"
+    if settings.DB_AUTH_SOCKET:
+        return f"mysql+pymysql://{settings.DB_USER}@localhost/{settings.DB_NAME}?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4"
+    else:
+        password = urllib.parse.quote_plus(settings.DB_PASSWORD)
+        return f"mysql+pymysql://{settings.DB_USER}:{password}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}?charset=utf8mb4"
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
