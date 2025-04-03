@@ -30,7 +30,6 @@ services:
       - DB_HOST=mysql
       - DB_PORT=3306
       - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
       
       # Redis Settings
@@ -60,10 +59,8 @@ services:
     container_name: telegram-chain-store-db
     restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${DB_NAME}
       - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
       - ./database_setup.sql:/docker-entrypoint-initdb.d/database_setup.sql
