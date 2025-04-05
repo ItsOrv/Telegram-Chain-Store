@@ -54,3 +54,396 @@ NameError: name 'args' is not defined
 2025-04-03 12:27:34,985 - database_setup - INFO - Successfully connected to MySQL with user chainstore_user using password authentication.
 2025-04-03 12:27:34,987 - database_setup - INFO - Running Alembic migrations...
 2025-04-03 12:27:34,987 - database_setup - INFO - Starting Alembic migrations...
+2025-04-05 15:52:13,480 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 15:52:13,487 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 15:52:13,488 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 15:52:13,488 - database_setup - INFO - Creating database and user...
+2025-04-05 15:52:13,489 - database_setup - INFO - Connected to MySQL using auth_socket.
+2025-04-05 15:52:13,499 - database_setup - INFO - User `chainstore_user` created successfully with auth_socket.
+2025-04-05 15:52:13,502 - database_setup - INFO - Updating .env file...
+2025-04-05 15:52:13,503 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-05 15:52:13,505 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-05 15:52:13,506 - database_setup - INFO - Testing connection to database with new user...
+2025-04-05 15:52:13,510 - database_setup - ERROR - Error connecting to database with user chainstore_user.
+2025-04-05 15:53:06,396 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 15:53:06,401 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 15:53:06,408 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 15:53:06,408 - database_setup - INFO - Creating database and user...
+2025-04-05 15:53:06,410 - database_setup - INFO - Connected to MySQL using auth_socket.
+2025-04-05 15:53:06,419 - database_setup - INFO - User `chainstore_user` created successfully with auth_socket.
+2025-04-05 15:53:06,423 - database_setup - INFO - Updating .env file...
+2025-04-05 15:53:06,423 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-05 15:53:06,424 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-05 15:53:06,425 - database_setup - INFO - Testing connection to database with new user...
+2025-04-05 15:53:06,427 - database_setup - ERROR - Error connecting to database with user chainstore_user.
+2025-04-05 15:54:55,704 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 15:54:55,709 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 15:54:55,711 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 15:54:55,711 - database_setup - INFO - Creating database and user...
+2025-04-05 15:54:55,725 - database_setup - INFO - Updating .env file...
+2025-04-05 15:54:55,726 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-05 15:54:55,727 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-05 15:54:55,727 - database_setup - INFO - Testing connection to database with new user...
+2025-04-05 15:54:55,730 - database_setup - ERROR - Error connecting to database with user chainstore_user.
+2025-04-05 15:56:50,356 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 15:56:50,361 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 15:56:50,363 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 15:56:50,363 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 15:56:50,371 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 15:56:50,371 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 15:56:50,371 - database_setup - INFO - Creating database and user...
+2025-04-05 15:56:50,372 - database_setup - INFO - Connected to MySQL using auth_socket
+2025-04-05 15:56:50,376 - database_setup - INFO - Database chainstore_db created successfully
+2025-04-05 15:56:50,383 - database_setup - INFO - Created user root with auth_socket authentication
+2025-04-05 15:56:50,385 - database_setup - DEBUG - Current privileges: (('GRANT USAGE ON *.* TO `root`@`localhost`',), ('GRANT ALL PRIVILEGES ON `chainstore_db`.* TO `root`@`localhost`',))
+2025-04-05 15:56:50,385 - database_setup - INFO - Updating .env file...
+2025-04-05 15:56:50,386 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-05 15:56:50,387 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-05 15:56:50,387 - database_setup - INFO - Testing connection to database with new user...
+2025-04-05 15:56:50,387 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=chainstore_db
+2025-04-05 15:56:50,387 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 15:56:50,388 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 15:56:50,388 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 15:56:50,388 - database_setup - INFO - Running Alembic migrations...
+2025-04-05 15:56:50,388 - database_setup - INFO - Starting Alembic migrations...
+2025-04-05 15:56:57,869 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 15:56:57,877 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 15:56:57,877 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 15:56:57,877 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 15:56:57,878 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 15:56:57,878 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 15:56:57,879 - database_setup - INFO - Creating database and user...
+2025-04-05 15:56:57,879 - database_setup - INFO - Connected to MySQL using auth_socket
+2025-04-05 15:56:57,883 - database_setup - INFO - Database chainstore_db created successfully
+2025-04-05 15:56:57,884 - database_setup - ERROR - Error setting up database: (1227, 'Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation')
+2025-04-05 15:56:57,884 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:00:56,480 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:00:56,484 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:00:56,484 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:00:56,485 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:00:56,487 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:00:56,487 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:00:56,488 - database_setup - INFO - Creating database and user...
+2025-04-05 16:00:56,489 - database_setup - INFO - Connected to MySQL using auth_socket
+2025-04-05 16:00:56,489 - database_setup - DEBUG - Current admin privileges: (('GRANT USAGE ON *.* TO `root`@`localhost`',), ('GRANT ALL PRIVILEGES ON `chainstore_db`.* TO `root`@`localhost`',))
+2025-04-05 16:00:56,490 - database_setup - WARNING - Could not grant CREATE USER privilege: (1698, "Access denied for user 'root'@'localhost'")
+2025-04-05 16:00:56,497 - database_setup - INFO - Database chainstore_db created successfully
+2025-04-05 16:00:56,498 - database_setup - WARNING - Error dropping existing users (may not exist): (1227, 'Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation')
+2025-04-05 16:00:56,498 - database_setup - ERROR - Failed to create user with auth_socket: (1227, 'Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation')
+2025-04-05 16:00:56,499 - database_setup - ERROR - Error setting up database: (1227, 'Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation')
+2025-04-05 16:00:56,499 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:06:00,242 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:06:00,246 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:06:00,264 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:06:00,264 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:06:00,266 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:06:00,266 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:06:00,267 - database_setup - INFO - Creating database and user...
+2025-04-05 16:06:00,322 - database_setup - ERROR - Command failed: DROP USER IF EXISTS 'root'@'localhost'
+2025-04-05 16:06:00,322 - database_setup - ERROR - Error: ERROR 1227 (42000) at line 1: Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+
+2025-04-05 16:06:00,323 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:07:19,780 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:07:19,784 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:07:19,803 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:07:19,803 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:07:19,805 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:07:19,805 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:07:19,805 - database_setup - INFO - Creating database and user...
+2025-04-05 16:07:19,805 - database_setup - DEBUG - Executing: GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION
+2025-04-05 16:07:19,822 - database_setup - ERROR - Command failed: GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION
+2025-04-05 16:07:19,823 - database_setup - ERROR - Error: ERROR 1698 (28000) at line 1: Access denied for user 'root'@'localhost'
+
+2025-04-05 16:07:19,823 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:07:25,853 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:07:42,108 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:07:42,127 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:07:42,128 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:07:42,130 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:07:42,130 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:07:42,131 - database_setup - INFO - Creating database and user...
+2025-04-05 16:07:42,131 - database_setup - DEBUG - Executing: GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION
+2025-04-05 16:07:42,150 - database_setup - ERROR - Command failed: GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION
+2025-04-05 16:07:42,150 - database_setup - ERROR - Error: ERROR 1698 (28000) at line 1: Access denied for user 'root'@'localhost'
+
+2025-04-05 16:07:42,151 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:08:46,521 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:08:46,525 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:08:46,543 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:08:46,543 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:08:46,544 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:08:46,545 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:08:46,545 - database_setup - INFO - Creating database and user...
+2025-04-05 16:08:46,546 - database_setup - DEBUG - Executing: DROP DATABASE IF EXISTS `chainstore_db`
+2025-04-05 16:08:46,566 - database_setup - DEBUG - Command succeeded: DROP DATABASE IF EXISTS `chainstore_db`
+2025-04-05 16:08:46,567 - database_setup - DEBUG - Executing: CREATE DATABASE `chainstore_db` 
+                    CHARACTER SET utf8mb4 
+                    COLLATE utf8mb4_unicode_ci
+2025-04-05 16:08:46,586 - database_setup - DEBUG - Command succeeded: CREATE DATABASE `chainstore_db` 
+                    CHARACTER SET utf8mb4 
+                    COLLATE utf8mb4_unicode_ci
+2025-04-05 16:08:46,586 - database_setup - INFO - Database and user created successfully using sudo
+2025-04-05 16:08:46,586 - database_setup - INFO - Updating .env file...
+2025-04-05 16:08:46,587 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-05 16:08:46,589 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-05 16:08:46,589 - database_setup - INFO - Testing connection to database with new user...
+2025-04-05 16:08:46,589 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=chainstore_db
+2025-04-05 16:08:46,589 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:08:46,590 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:08:46,591 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:08:46,591 - database_setup - INFO - Running Alembic migrations...
+2025-04-05 16:08:46,591 - database_setup - INFO - Starting Alembic migrations...
+2025-04-05 16:08:56,388 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:08:56,398 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:08:56,431 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:08:56,431 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:08:56,432 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:08:56,432 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:08:56,432 - database_setup - INFO - Creating database and user...
+2025-04-05 16:08:56,432 - database_setup - DEBUG - Executing: DROP DATABASE IF EXISTS `chainstore_db`
+2025-04-05 16:08:56,522 - database_setup - DEBUG - Command succeeded: DROP DATABASE IF EXISTS `chainstore_db`
+2025-04-05 16:08:56,522 - database_setup - DEBUG - Executing: CREATE DATABASE `chainstore_db` 
+                    CHARACTER SET utf8mb4 
+                    COLLATE utf8mb4_unicode_ci
+2025-04-05 16:08:56,557 - database_setup - DEBUG - Command succeeded: CREATE DATABASE `chainstore_db` 
+                    CHARACTER SET utf8mb4 
+                    COLLATE utf8mb4_unicode_ci
+2025-04-05 16:08:56,558 - database_setup - INFO - Database and user created successfully using sudo
+2025-04-05 16:08:56,558 - database_setup - INFO - Updating .env file...
+2025-04-05 16:08:56,559 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-05 16:08:56,565 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-05 16:08:56,565 - database_setup - INFO - Testing connection to database with new user...
+2025-04-05 16:08:56,565 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=chainstore_db
+2025-04-05 16:08:56,565 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:08:56,567 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:08:56,568 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:08:56,569 - database_setup - INFO - Running Alembic migrations...
+2025-04-05 16:08:56,569 - database_setup - INFO - Starting Alembic migrations...
+2025-04-05 16:10:11,261 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:10:11,265 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:10:11,284 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:10:11,284 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:10:11,286 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:10:11,286 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:10:11,286 - database_setup - INFO - Creating database and user...
+2025-04-05 16:10:11,287 - database_setup - DEBUG - Executing: DROP DATABASE IF EXISTS `chainstore_db`
+2025-04-05 16:10:11,336 - database_setup - DEBUG - Command succeeded: DROP DATABASE IF EXISTS `chainstore_db`
+2025-04-05 16:10:11,336 - database_setup - DEBUG - Executing: CREATE DATABASE `chainstore_db` 
+                    CHARACTER SET utf8mb4 
+                    COLLATE utf8mb4_unicode_ci
+2025-04-05 16:10:11,357 - database_setup - DEBUG - Command succeeded: CREATE DATABASE `chainstore_db` 
+                    CHARACTER SET utf8mb4 
+                    COLLATE utf8mb4_unicode_ci
+2025-04-05 16:10:11,357 - database_setup - DEBUG - Executing: GRANT ALL PRIVILEGES ON `chainstore_db`.* TO 'root'@'localhost'
+2025-04-05 16:10:11,376 - database_setup - WARNING - Command failed: GRANT ALL PRIVILEGES ON `chainstore_db`.* TO 'root'@'localhost'
+2025-04-05 16:10:11,376 - database_setup - WARNING - Error: ERROR 1044 (42000) at line 1: Access denied for user 'root'@'localhost' to database 'chainstore_db'
+
+2025-04-05 16:10:11,377 - database_setup - DEBUG - Executing: FLUSH PRIVILEGES
+2025-04-05 16:10:11,396 - database_setup - WARNING - Command failed: FLUSH PRIVILEGES
+2025-04-05 16:10:11,397 - database_setup - WARNING - Error: ERROR 1227 (42000) at line 1: Access denied; you need (at least one of) the RELOAD privilege(s) for this operation
+
+2025-04-05 16:10:11,397 - database_setup - INFO - Database and user created successfully using sudo
+2025-04-05 16:10:11,397 - database_setup - INFO - Updating .env file...
+2025-04-05 16:10:11,399 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-05 16:10:11,400 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-05 16:10:11,400 - database_setup - INFO - Testing connection to database with new user...
+2025-04-05 16:10:11,401 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=chainstore_db
+2025-04-05 16:10:11,401 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:10:11,404 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:10:11,404 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:10:11,405 - database_setup - INFO - Running Alembic migrations...
+2025-04-05 16:10:11,405 - database_setup - INFO - Starting Alembic migrations...
+2025-04-05 16:11:47,583 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:11:47,587 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:11:47,606 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:11:47,607 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:11:47,608 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:11:47,609 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:11:47,609 - database_setup - INFO - Creating database and user...
+2025-04-05 16:11:47,669 - database_setup - ERROR - MySQL command failed: ERROR 1698 (28000) at line 1: Access denied for user 'root'@'localhost'
+
+2025-04-05 16:11:47,669 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:12:54,509 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:12:54,513 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:12:54,530 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:12:54,530 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:12:54,532 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:12:54,532 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:12:54,532 - database_setup - INFO - Creating database and user...
+2025-04-05 16:12:54,573 - database_setup - ERROR - MySQL command failed: ERROR 1227 (42000) at line 5 in file: '/tmp/mysql_setup.sql': Access denied; you need (at least one of) the RELOAD privilege(s) for this operation
+
+2025-04-05 16:12:54,573 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:14:17,582 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:14:17,586 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:14:17,606 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:14:17,606 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:14:17,607 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:14:17,608 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:14:17,608 - database_setup - INFO - Creating database and user...
+2025-04-05 16:14:17,608 - database_setup - INFO - Executing: Creating database
+2025-04-05 16:14:17,650 - database_setup - DEBUG - Successfully completed: Creating database
+2025-04-05 16:14:17,650 - database_setup - INFO - Database and users configured successfully
+2025-04-05 16:14:17,650 - database_setup - INFO - Updating .env file...
+2025-04-05 16:14:17,650 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-05 16:14:17,652 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-05 16:14:17,652 - database_setup - INFO - Testing connection to database with new user...
+2025-04-05 16:14:17,652 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=chainstore_db
+2025-04-05 16:14:17,652 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:14:17,654 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:14:17,654 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:14:17,654 - database_setup - INFO - Running Alembic migrations...
+2025-04-05 16:14:17,655 - database_setup - INFO - Starting Alembic migrations...
+2025-04-05 16:19:07,175 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:19:07,179 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:19:07,198 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:19:07,199 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:19:07,200 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:19:07,200 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:19:07,201 - database_setup - INFO - Creating database and user...
+2025-04-05 16:19:07,201 - database_setup - INFO - Executing: Creating database
+2025-04-05 16:19:07,277 - database_setup - DEBUG - Successfully completed: Creating database
+2025-04-05 16:19:07,277 - database_setup - INFO - Executing: Setting up chainstore user
+2025-04-05 16:19:07,295 - database_setup - ERROR - MySQL operation failed: Setting up chainstore user
+2025-04-05 16:19:07,296 - database_setup - ERROR - Error: ERROR 1227 (42000) at line 1: Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+
+2025-04-05 16:19:07,296 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:20:30,878 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:20:30,882 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:20:30,903 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:20:30,903 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:20:30,905 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:20:30,906 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:20:30,906 - database_setup - INFO - Creating database and user...
+2025-04-05 16:20:30,907 - database_setup - INFO - Initializing MySQL permissions...
+2025-04-05 16:20:30,924 - database_setup - WARNING - MySQL initialization warning: ERROR 1227 (42000) at line 5: Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+
+2025-04-05 16:20:30,924 - database_setup - INFO - Executing: Creating database
+2025-04-05 16:20:30,964 - database_setup - DEBUG - Successfully completed: Creating database
+2025-04-05 16:20:30,964 - database_setup - INFO - Creating chainstore user...
+2025-04-05 16:20:30,983 - database_setup - ERROR - Failed to create chainstore user
+2025-04-05 16:20:30,983 - database_setup - ERROR - Error: ERROR 1227 (42000) at line 2: Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+
+2025-04-05 16:20:30,983 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:21:43,467 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:21:43,478 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:21:43,502 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:21:43,502 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:21:43,503 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:21:43,504 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:21:43,504 - database_setup - INFO - Creating database and user...
+2025-04-05 16:21:43,504 - database_setup - INFO - Setting up database and user...
+2025-04-05 16:21:43,526 - database_setup - ERROR - MySQL setup failed: ERROR 1227 (42000) at line 9: Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+
+2025-04-05 16:21:43,526 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:23:05,634 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:23:05,638 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:23:05,656 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:23:05,656 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:23:05,657 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:23:05,657 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:23:05,658 - database_setup - INFO - Creating database and user...
+2025-04-05 16:23:05,658 - database_setup - INFO - Creating database...
+2025-04-05 16:23:05,677 - database_setup - INFO - Setting up root privileges...
+2025-04-05 16:23:05,692 - database_setup - WARNING - Warning setting up root: ERROR 1064 (42000) at line 5: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '@user@'localhost' IDENTIFIED WITH auth_socket' at line 1
+
+2025-04-05 16:23:05,692 - database_setup - INFO - Setting up chainstore user...
+2025-04-05 16:23:05,708 - database_setup - ERROR - Failed to create user: ERROR 1227 (42000) at line 2: Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+
+2025-04-05 16:23:05,708 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:28:29,011 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:28:29,016 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:28:29,038 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:28:29,039 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:28:29,040 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:28:29,041 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:28:29,041 - database_setup - INFO - Creating database and user...
+2025-04-05 16:28:29,041 - database_setup - INFO - Creating database...
+2025-04-05 16:28:29,065 - database_setup - INFO - Setting up root privileges...
+2025-04-05 16:28:29,084 - database_setup - WARNING - Warning setting up root: ERROR 1064 (42000) at line 5: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '@user@'localhost' IDENTIFIED WITH auth_socket' at line 1
+
+2025-04-05 16:28:29,084 - database_setup - INFO - Setting up chainstore user...
+2025-04-05 16:28:29,104 - database_setup - ERROR - Failed to create user: ERROR 1227 (42000) at line 2: Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+
+2025-04-05 16:28:29,104 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:28:35,938 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:28:35,942 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:28:35,959 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:28:35,959 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:28:35,960 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:28:35,961 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:28:35,961 - database_setup - INFO - Creating database and user...
+2025-04-05 16:28:35,961 - database_setup - INFO - Setting up database and user...
+2025-04-05 16:28:35,982 - database_setup - ERROR - MySQL setup failed: ERROR 1227 (42000) at line 9: Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+
+2025-04-05 16:28:35,983 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:28:39,222 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:28:39,226 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:28:39,243 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:28:39,244 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:28:39,245 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:28:39,246 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:28:39,246 - database_setup - INFO - Creating database and user...
+2025-04-05 16:28:39,246 - database_setup - INFO - Initializing MySQL permissions...
+2025-04-05 16:28:39,264 - database_setup - WARNING - MySQL initialization warning: ERROR 1227 (42000) at line 5: Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+
+2025-04-05 16:28:39,266 - database_setup - INFO - Executing: Creating database
+2025-04-05 16:28:39,307 - database_setup - DEBUG - Successfully completed: Creating database
+2025-04-05 16:28:39,308 - database_setup - INFO - Creating chainstore user...
+2025-04-05 16:28:39,325 - database_setup - ERROR - Failed to create chainstore user
+2025-04-05 16:28:39,325 - database_setup - ERROR - Error: ERROR 1227 (42000) at line 2: Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+
+2025-04-05 16:28:39,325 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:28:43,273 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:28:43,278 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:28:43,300 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:28:43,300 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:28:43,301 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:28:43,302 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:28:43,302 - database_setup - INFO - Creating database and user...
+2025-04-05 16:28:43,302 - database_setup - INFO - Executing: Creating database
+2025-04-05 16:28:43,346 - database_setup - DEBUG - Successfully completed: Creating database
+2025-04-05 16:28:43,346 - database_setup - INFO - Executing: Setting up chainstore user
+2025-04-05 16:28:43,366 - database_setup - ERROR - MySQL operation failed: Setting up chainstore user
+2025-04-05 16:28:43,366 - database_setup - ERROR - Error: ERROR 1227 (42000) at line 1: Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+
+2025-04-05 16:28:43,367 - database_setup - ERROR - Error creating database and user.
+2025-04-05 16:28:47,592 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 16:28:47,596 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 16:28:47,616 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 16:28:47,617 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:28:47,618 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:28:47,618 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:28:47,619 - database_setup - INFO - Creating database and user...
+2025-04-05 16:28:47,619 - database_setup - INFO - Executing: Creating database
+2025-04-05 16:28:47,665 - database_setup - DEBUG - Successfully completed: Creating database
+2025-04-05 16:28:47,665 - database_setup - INFO - Database and users configured successfully
+2025-04-05 16:28:47,665 - database_setup - INFO - Updating .env file...
+2025-04-05 16:28:47,666 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-05 16:28:47,668 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-05 16:28:47,668 - database_setup - INFO - Testing connection to database with new user...
+2025-04-05 16:28:47,669 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=chainstore_db
+2025-04-05 16:28:47,669 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 16:28:47,671 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 16:28:47,671 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 16:28:47,672 - database_setup - INFO - Running Alembic migrations...
+2025-04-05 16:28:47,672 - database_setup - INFO - Starting Alembic migrations...
+2025-04-05 17:11:56,063 - database_setup - INFO - Loading environment file from /root/Telegram-Chain-Store/.env
+2025-04-05 17:11:56,066 - database_setup - INFO - Testing connection to MySQL with admin user...
+2025-04-05 17:11:56,086 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=None
+2025-04-05 17:11:56,087 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 17:11:56,088 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 17:11:56,088 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 17:11:56,089 - database_setup - INFO - Creating database and user...
+2025-04-05 17:11:56,089 - database_setup - INFO - Executing: Creating database
+2025-04-05 17:11:56,160 - database_setup - DEBUG - Successfully completed: Creating database
+2025-04-05 17:11:56,160 - database_setup - INFO - Database and users configured successfully
+2025-04-05 17:11:56,161 - database_setup - INFO - Updating .env file...
+2025-04-05 17:11:56,161 - database_setup - INFO - Created backup of .env file at /root/Telegram-Chain-Store/.env.env.bak.
+2025-04-05 17:11:56,166 - database_setup - INFO - Database settings updated in /root/Telegram-Chain-Store/.env.
+2025-04-05 17:11:56,167 - database_setup - INFO - Testing connection to database with new user...
+2025-04-05 17:11:56,167 - database_setup - DEBUG - Testing connection with: user=root, auth_socket=True, database=chainstore_db
+2025-04-05 17:11:56,167 - database_setup - DEBUG - Trying auth_socket connection for user root
+2025-04-05 17:11:56,169 - database_setup - DEBUG - Connected as: ('root@localhost', 'root@localhost')
+2025-04-05 17:11:56,169 - database_setup - INFO - Successfully connected to MySQL with user root using auth_socket authentication.
+2025-04-05 17:11:56,170 - database_setup - INFO - Running Alembic migrations...
+2025-04-05 17:11:56,170 - database_setup - INFO - Starting Alembic migrations...

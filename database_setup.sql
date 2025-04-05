@@ -1,29 +1,22 @@
--- اسکریپت اولیه‌ی ایجاد دیتابیس (می‌توان در پوشه docs یا database قرار داد)
-
-
 -- Database setup for Telegram Chain Store
 -- Warning: This will reset the database and user!
+-- Note: This script must be run with sudo mysql
 
--- Drop existing database and user if they exist
+-- Create database with proper encoding
 DROP DATABASE IF EXISTS chainstore_db;
-DROP USER IF EXISTS 'chainstore_user'@'localhost';
-
--- Create database with proper character set for multilingual support
-CREATE DATABASE chainstore_db 
-CHARACTER SET utf8mb4 
+CREATE DATABASE chainstore_db
+CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
--- Create user with auth_socket authentication
-CREATE USER 'chainstore_user'@'localhost' 
-IDENTIFIED WITH auth_socket;
+-- Create user with password authentication (for both local and remote access)
+DROP USER IF EXISTS 'chainstore_user'@'localhost';
+DROP USER IF EXISTS 'chainstore_user'@'%';
+CREATE USER 'chainstore_user'@'localhost' IDENTIFIED BY 'chainstore123';
+CREATE USER 'chainstore_user'@'%' IDENTIFIED BY 'chainstore123';
 
--- Grant only necessary privileges
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, REFERENCES, INDEX, ALTER, 
-      EXECUTE, CREATE VIEW, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE 
-ON chainstore_db.* TO 'chainstore_user'@'localhost';
+-- Grant privileges to the user
+GRANT ALL PRIVILEGES ON chainstore_db.* TO 'chainstore_user'@'localhost';
+GRANT ALL PRIVILEGES ON chainstore_db.* TO 'chainstore_user'@'%';
 
 -- Apply changes
 FLUSH PRIVILEGES;
-
--- Security note: Make sure to change the password in production
--- and restrict user permissions as needed

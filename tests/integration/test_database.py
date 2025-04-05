@@ -3,8 +3,8 @@ import sys
 import pytest
 import random
 import string
-from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy import create_engine, text
 from decimal import Decimal
 from datetime import datetime, timedelta, timezone
 
@@ -17,7 +17,12 @@ from src.core.models import (
     UserRole, OrderStatus, PaymentStatus, PaymentMethod, UserStatus,
     ProductImage, Notification, Province
 )
-from src.core.database import get_db, engine, Base
+from src.core.database import Base, get_db
+
+# Create test database engine
+TEST_DATABASE_URL = "mysql+pymysql://chainstore_user:chainstore123@localhost/chainstore_db"
+engine = create_engine(TEST_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def generate_unique_telegram_id():
     """Generate unique telegram ID for testing"""
@@ -34,23 +39,33 @@ def generate_unique_transaction_id():
     random_suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
     return f"TEST_TX_{timestamp}_{random_suffix}"
 
-@pytest.fixture(scope="function")
-def db():
-    """Create fresh database for each test"""
+@pytest.fixture(scope="session", autouse=True)
+def setup_db():
+    """Setup database once for all tests"""
     # Drop all tables first to ensure clean state
     Base.metadata.drop_all(bind=engine)
     
     # Create all tables
     Base.metadata.create_all(bind=engine)
     
-    # Create a new session
-    db = next(get_db())
+    yield
+    
+    # Cleanup after all tests
+    Base.metadata.drop_all(bind=engine)
+
+@pytest.fixture(scope="function")
+def db():
+    """Create fresh database session for each test"""
+    connection = engine.connect()
+    transaction = connection.begin()
+    session = SessionLocal(bind=connection)
+    
     try:
-        yield db
+        yield session
     finally:
-        db.close()
-        # Clean up after test
-        Base.metadata.drop_all(bind=engine)
+        session.close()
+        transaction.rollback()
+        connection.close()
 
 @pytest.fixture
 def sample_data(db: Session):
