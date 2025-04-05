@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base
 from src.config.settings import get_settings
 import logging
 
@@ -19,7 +18,7 @@ engine = create_engine(
 # Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create declarative base
+# Create declarative base using new SQLAlchemy 2.0 style
 Base = declarative_base()
 
 def get_db():

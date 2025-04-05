@@ -106,13 +106,16 @@ def parse_arguments():
 
 def get_mysql_config(args):
     """Get MySQL settings from arguments or .env file"""
+    # Get system username for auth_socket
+    system_user = os.getenv('USER', 'root')
+    
     config = {
         'host': args.db_host or os.getenv('DB_HOST', 'localhost'),
         'port': args.db_port or int(os.getenv('DB_PORT', 3306)),
-        'user': args.db_user or os.getenv('DB_USER', 'chainstore_user'),
+        'user': system_user if args.auth_socket else (args.db_user or os.getenv('DB_USER', 'chainstore_user')),
         'password': args.db_password or os.getenv('DB_PASSWORD', ''),
         'database': args.db_name or os.getenv('DB_NAME', 'chainstore_db'),
-        'admin_user': args.admin_user,
+        'admin_user': system_user if args.auth_socket else args.admin_user,
         'admin_password': args.admin_password,
         'use_auth_socket': args.auth_socket or os.getenv('DB_AUTH_SOCKET', 'false').lower() in ('true', '1', 'yes')
     }
@@ -147,8 +150,23 @@ def test_mysql_connection(config, admin=False):
     """Test MySQL connection"""
     user = config['admin_user'] if admin else config['user']
     password = config['admin_password'] if admin else config['password']
+    database = None if admin else config['database']
     
-    # Try different connection methods
+    # For Ubuntu MySQL root access
+    sudo_command = None
+    if admin and user == 'root' and config['use_auth_socket']:
+        sudo_command = ['sudo', 'mysql', '-u', user, '--execute="SELECT 1;"']
+        try:
+            result = subprocess.run(sudo_command, capture_output=True, text=True)
+            if result.returncode == 0:
+                logger.info("Successfully connected to MySQL using sudo")
+                return True
+        except Exception as e:
+            logger.debug(f"Sudo connection failed: {e}")
+
+    # Show detailed connection info in debug mode
+    logger.debug(f"Testing connection with: user={user}, auth_socket={config['use_auth_socket']}, database={database}")
+    
     connection_methods = []
     
     # Method 1: Try auth_socket if enabled
@@ -159,7 +177,7 @@ def test_mysql_connection(config, admin=False):
                 'host': 'localhost',
                 'user': user,
                 'unix_socket': '/var/run/mysqld/mysqld.sock',
-                'db': config['database'] if not admin else None,
+                'database': database,
                 'charset': 'utf8mb4'
             }
         })
@@ -171,35 +189,103 @@ def test_mysql_connection(config, admin=False):
             'host': config['host'],
             'port': config['port'],
             'user': user,
-            'password': password,
+            'password': password or None,  # Use None if empty password
+            'database': database,
             'charset': 'utf8mb4'
         }
     })
-    
-    # Try each connection method
+
     for method in connection_methods:
         try:
             logger.debug(f"Trying {method['type']} connection for user {user}")
             connection = pymysql.connect(**method['params'])
+            
+            # Test the connection with a simple query
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT USER(), CURRENT_USER()")
+                result = cursor.fetchone()
+                logger.debug(f"Connected as: {result}")
+                
             connection.close()
             logger.info(f"Successfully connected to MySQL with user {user} using {method['type']} authentication.")
             
             # If we're using a different method than configured, update the config
             if method['type'] == 'password' and config['use_auth_socket']:
-                logger.warning(f"Auth socket failed but password auth worked. Updating configuration.")
+                logger.warning("Auth socket failed but password auth worked. Updating configuration.")
                 config['use_auth_socket'] = False
                 
             return True
         except pymysql.Error as e:
-            logger.debug(f"Error connecting to MySQL with user {user} using {method['type']}: {e}")
+            logger.debug(f"Connection failed with {method['type']}: {e}")
+            continue
     
-    # If we get here, all connection methods failed
     return False
 
 def create_database(config, args):
     """Create database"""
+    if config['admin_user'] == 'root' and config['use_auth_socket']:
+        try:
+            # Split commands into separate operations to avoid privilege issues
+            operations = [
+                # Database operations
+                {
+                    'desc': 'Creating database',
+                    'commands': [
+                        f"DROP DATABASE IF EXISTS `{config['database']}`;",
+                        f"""CREATE DATABASE `{config['database']}`
+                            CHARACTER SET utf8mb4
+                            COLLATE utf8mb4_unicode_ci;"""
+                    ]
+                }
+            ]
+
+            # Add user operations if not using root
+            if config['user'] != 'root':
+                operations.append({
+                    'desc': 'Creating user',
+                    'commands': [
+                        f"DROP USER IF EXISTS '{config['user']}'@'localhost';",
+                        f"DROP USER IF EXISTS '{config['user']}'@'%';",
+                        f"CREATE USER '{config['user']}'@'localhost' IDENTIFIED BY '{config['password']}';",
+                        f"CREATE USER '{config['user']}'@'%' IDENTIFIED BY '{config['password']}';"
+                    ]
+                })
+                
+                operations.append({
+                    'desc': 'Granting privileges',
+                    'commands': [
+                        f"GRANT ALL ON `{config['database']}`.* TO '{config['user']}'@'localhost';",
+                        f"GRANT ALL ON `{config['database']}`.* TO '{config['user']}'@'%';"
+                    ]
+                })
+            
+            # Execute each operation separately
+            for operation in operations:
+                logger.info(f"Executing: {operation['desc']}")
+                sql = '\n'.join(operation['commands'])
+                result = subprocess.run(
+                    ['sudo', 'mysql'],
+                    input=sql,
+                    text=True,
+                    capture_output=True
+                )
+                
+                if result.returncode != 0:
+                    logger.error(f"MySQL operation failed: {operation['desc']}")
+                    logger.error(f"Error: {result.stderr}")
+                    return False
+                else:
+                    logger.debug(f"Successfully completed: {operation['desc']}")
+            
+            logger.info("Database and users configured successfully")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error executing MySQL commands: {e}")
+            return False
+
+    # Fall back to normal connection method if not root or not using auth_socket
     connection = None
-    
     try:
         # Try auth_socket first if enabled
         if config['use_auth_socket']:
@@ -210,12 +296,12 @@ def create_database(config, args):
                     unix_socket='/var/run/mysqld/mysqld.sock',
                     charset='utf8mb4'
                 )
-                logger.info(f"Connected to MySQL using auth_socket.")
+                logger.info("Connected to MySQL using auth_socket")
             except pymysql.Error as e:
                 logger.warning(f"Auth socket connection failed: {e}")
                 connection = None
         
-        # If auth_socket failed or not enabled, try password
+        # Fallback to password auth
         if connection is None:
             connection = pymysql.connect(
                 host=config['host'],
@@ -224,51 +310,79 @@ def create_database(config, args):
                 password=config['admin_password'],
                 charset='utf8mb4'
             )
-            logger.info(f"Connected to MySQL using password authentication.")
-            # Update config to use password auth since it worked
+            logger.info("Connected to MySQL using password")
             config['use_auth_socket'] = False
-        
+
         with connection.cursor() as cursor:
-            # Drop and create database
-            cursor.execute(f"DROP DATABASE IF EXISTS `{config['database']}`;")
+            # First check and grant required privileges to admin user
+            cursor.execute("SHOW GRANTS")
+            grants = cursor.fetchall()
+            logger.debug(f"Current admin privileges: {grants}")
+            
+            # Try to grant CREATE USER privilege if needed
+            try:
+                cursor.execute("GRANT CREATE USER ON *.* TO %s@'localhost' WITH GRANT OPTION", (config['admin_user'],))
+                cursor.execute("FLUSH PRIVILEGES")
+                logger.info("Successfully granted CREATE USER privilege")
+            except pymysql.Error as e:
+                logger.warning(f"Could not grant CREATE USER privilege: {e}")
+                # Continue anyway as the user might already have the privilege
+
+            # Create database
+            cursor.execute(f"DROP DATABASE IF EXISTS `{config['database']}`")
             cursor.execute(f"""
                 CREATE DATABASE `{config['database']}` 
                 CHARACTER SET utf8mb4 
-                COLLATE utf8mb4_unicode_ci;
+                COLLATE utf8mb4_unicode_ci
             """)
+            logger.info(f"Database {config['database']} created successfully")
             
-            # Important: Always use password auth for new user in auto mode
-            if args.auto or args.password_auth:
-                # Drop existing user
-                cursor.execute(f"DROP USER IF EXISTS '{config['user']}'@'localhost';")
-                cursor.execute(f"DROP USER IF EXISTS '{config['user']}'@'%';")
-                
-                # Create user with password and allow connection from anywhere
-                cursor.execute(f"CREATE USER '{config['user']}'@'localhost' IDENTIFIED BY '{config['password']}';")
-                cursor.execute(f"CREATE USER '{config['user']}'@'%' IDENTIFIED BY '{config['password']}';")
-                
-                # Grant privileges
-                cursor.execute(f"GRANT ALL PRIVILEGES ON `{config['database']}`.* TO '{config['user']}'@'localhost';")
-                cursor.execute(f"GRANT ALL PRIVILEGES ON `{config['database']}`.* TO '{config['user']}'@'%';")
-                
-                config['use_auth_socket'] = False
-                logger.info(f"User `{config['user']}` created successfully with password authentication.")
-            else:
-                # Use auth_socket if specifically requested
-                cursor.execute(f"DROP USER IF EXISTS '{config['user']}'@'localhost';")
-                cursor.execute(f"CREATE USER '{config['user']}'@'localhost' IDENTIFIED WITH auth_socket;")
-                cursor.execute(f"GRANT ALL PRIVILEGES ON `{config['database']}`.* TO '{config['user']}'@'localhost';")
-                logger.info(f"User `{config['user']}` created successfully with auth_socket.")
+            # Make sure we're using the new database
+            cursor.execute(f"USE `{config['database']}`")
             
-            cursor.execute("FLUSH PRIVILEGES;")
+            # Drop existing users
+            try:
+                cursor.execute(f"DROP USER IF EXISTS '{config['user']}'@'localhost'")
+                cursor.execute(f"DROP USER IF EXISTS '{config['user']}'@'%'")
+            except pymysql.Error as e:
+                logger.warning(f"Error dropping existing users (may not exist): {e}")
             
-        return True
-        
+            # Create user based on auth method
+            if config['use_auth_socket']:
+                try:
+                    # Create user with auth_socket and grant localhost access
+                    cursor.execute(f"CREATE USER '{config['user']}'@'localhost' IDENTIFIED WITH auth_socket")
+                    cursor.execute(f"GRANT ALL PRIVILEGES ON `{config['database']}`.* TO '{config['user']}'@'localhost'")
+                    logger.info(f"Created user {config['user']} with auth_socket authentication")
+                except pymysql.Error as e:
+                    logger.error(f"Failed to create user with auth_socket: {e}")
+                    # Try password auth as fallback
+                    config['use_auth_socket'] = False
+                    raise
+            
+            if not config['use_auth_socket']:
+                # Create user with password and grant access from anywhere
+                cursor.execute(f"CREATE USER '{config['user']}'@'localhost' IDENTIFIED BY '{config['password']}'")
+                cursor.execute(f"CREATE USER '{config['user']}'@'%' IDENTIFIED BY '{config['password']}'")
+                cursor.execute(f"GRANT ALL PRIVILEGES ON `{config['database']}`.* TO '{config['user']}'@'localhost'")
+                cursor.execute(f"GRANT ALL PRIVILEGES ON `{config['database']}`.* TO '{config['user']}'@'%'")
+                logger.info(f"Created user {config['user']} with password authentication")
+            
+            cursor.execute("FLUSH PRIVILEGES")
+            
+            # Verify final privileges
+            cursor.execute("SHOW GRANTS FOR CURRENT_USER")
+            grants = cursor.fetchall()
+            logger.debug(f"Final privileges: {grants}")
+            
+            return True
+            
     except pymysql.Error as e:
         logger.error(f"Error setting up database: {e}")
+        return False
+    finally:
         if connection:
             connection.close()
-        return False
 
 def update_env_file(config, env_file):
     """Update .env file with database settings"""
@@ -374,9 +488,6 @@ def main():
     if not test_mysql_connection(mysql_config, admin=True):
         logger.error(f"Error connecting to MySQL with admin user {mysql_config['admin_user']}.")
         logger.error("Could not connect with either auth_socket or password authentication.")
-        logger.error("Please make sure MySQL is installed and running.")
-        logger.error("For auth_socket: Make sure the system user matches MySQL username.")
-        logger.error("For password auth: Make sure the password is correct.")
         sys.exit(1)
     
     # Create database and user
