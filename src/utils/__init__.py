@@ -10,5 +10,7 @@ from src.utils.logger import (
     log_error,
     log_db_operation,
     log_ui_event,
-    log_function_execution
+    log_function_execution,
+    setup_logger,
+    log_to_file
 ) 

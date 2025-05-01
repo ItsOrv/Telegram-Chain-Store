@@ -1,280 +1,195 @@
-# ربات فروشگاه زنجیره‌ای تلگرام
+# Telegram Chain Store Bot
 
-## قابلیت‌ها
+این ربات تلگرام یک فروشگاه زنجیره‌ای با قابلیت‌های پرداخت، مدیریت محصولات و سیستم تحویل مبتنی بر مکان می‌باشد.
 
-### مدیریت کاربران
-- ثبت‌نام و احراز هویت کاربران
-- کنترل دسترسی مبتنی بر نقش (مدیر، فروشنده، مشتری)
-- مدیریت پروفایل کاربران
-- مدیریت وضعیت کاربران (فعال، مسدود، تعلیق)
+## ساختار پروژه
 
-### مدیریت محصولات
-- لیست و دسته‌بندی محصولات
-- عملیات CRUD محصولات
-- مدیریت موجودی
-- مدیریت قیمت
-- پشتیبانی از تصاویر محصول
-- نمایش محصولات بر اساس شهر
+ساختار اصلی پروژه به شرح زیر است:
 
-### مدیریت سفارشات
-- سبد خرید
-- ایجاد و پیگیری سفارشات
-- به‌روزرسانی وضعیت سفارش
-- تاریخچه سفارشات
-- لغو سفارش
-
-### سیستم پرداخت
-- روش‌های پرداخت متعدد:
-  - پرداخت با موجودی
-  - پرداخت با ارز دیجیتال (TRC20)
-- تأیید پرداخت
-- تاریخچه تراکنش‌ها
-- مدیریت موجودی
-
-### مدیریت موقعیت مکانی
-- مدیریت شهر و استان
-- تنظیمات موقعیت کاربر
-- مدیریت مناطق تحویل
-
-### سیستم پشتیبانی
-- پشتیبانی مبتنی بر تیکت
-- رابط پشتیبانی ادمین
-- رابط پشتیبانی کاربر
-
-### ویژگی‌های امنیتی
-- احراز هویت مبتنی بر JWT
-- کنترل دسترسی مبتنی بر نقش
-- اعتبارسنجی ورودی‌ها
-- محدودیت نرخ درخواست
-- پردازش امن پرداخت‌ها
-- رمزنگاری داده‌ها
-- مدیریت نشست
-- احراز هویت پایگاه داده با auth_socket
-
-### نظارت و ثبت رویدادها
-- سیستم ثبت رویداد جامع
-- ردیابی خطاها
-- ثبت اقدامات کاربر
-- ثبت اقدامات ادمین
-- نظارت بر عملکرد
-
-## معماری فنی
-
-### اجزای اصلی
-- **کلاینت تلگرام**: مدیریت ارتباط با API تلگرام
-- **لایه پایگاه داده**: ORM SQLAlchemy با MySQL (با احراز هویت auth_socket)
-- **لایه کش**: Redis برای مدیریت نشست و کش
-- **لایه امنیتی**: احراز هویت JWT و رمزنگاری
-- **لایه پرداخت**: پردازش پرداخت با ارز دیجیتال و موجودی
-
-### ساختار پروژه
 ```
 src/
-├── bot/                 # پیاده‌سازی ربات
-│   ├── handlers/        # مدیریت پیام‌ها و پاسخ‌ها
-│   ├── common/          # ابزارهای مشترک ربات
-│   └── roles/           # عملکردهای خاص نقش‌ها
-├── core/                # منطق اصلی کسب‌وکار
-│   ├── models/          # مدل‌های پایگاه داده
-│   ├── services/        # سرویس‌های کسب‌وکار
-│   └── exceptions/      # استثناهای سفارشی
-├── config/              # مدیریت پیکربندی
-├── integrations/        # یکپارچه‌سازی با سرویس‌های خارجی
-├── utils/               # توابع کمکی
-└── monitoring/          # نظارت و ثبت رویدادها
+├── bot/                   # کد مربوط به ربات تلگرام
+│   ├── keyboards/         # کیبوردهای تمام بخش‌ها
+│   ├── handlers/          # هندلرهای کالبک و دستورات
+│   │   ├── callback_router.py  # مسیردهی کالبک‌ها
+│   │   ├── admin_callbacks.py  # کالبک‌های مدیر
+│   │   ├── user_callbacks.py   # کالبک‌های کاربر
+│   │   └── ...
+│   ├── utils/             # ابزارهای کمکی
+│   ├── common/            # عناصر مشترک (پیام‌ها، ثابت‌ها)
+│   ├── setup.py           # راه‌اندازی ربات
+│   └── client.py          # کلاینت اصلی ربات
+├── core/                  # هسته اصلی برنامه
+│   ├── models/            # مدل‌های داده
+│   ├── services/          # سرویس‌های مختلف
+│   └── database.py        # پیکربندی پایگاه داده
+├── config/                # تنظیمات برنامه
+├── utils/                 # ابزارهای عمومی
+└── integrations/          # ادغام با سرویس‌های خارجی
 ```
 
-## اقدامات امنیتی
+## بخش‌های اصلی
 
-### احراز هویت و مجوز
-- احراز هویت مبتنی بر توکن JWT
-- کنترل دسترسی مبتنی بر نقش
-- مدیریت نشست با Redis
-- مکانیزم انقضا و تمدید توکن
-- احراز هویت پایگاه داده با auth_socket
+### Bot Handlers
 
-### حفاظت از داده‌ها
-- رمزنگاری داده‌های حساس
-- هش کردن رمز عبور
-- اعتبارسنجی و پاکسازی ورودی‌ها
-- پیشگیری از تزریق SQL
-- محافظت در برابر XSS
+فایل‌های `*_callbacks.py` منطق اصلی کالبک‌های برنامه را پیاده‌سازی می‌کنند. هر فایل مسئول یک بخش خاص از برنامه است:
 
-### امنیت پرداخت
-- تأیید امن پرداخت
-- اعتبارسنجی تراکنش
-- تشخیص تقلب
-- رمزنگاری داده‌های پرداخت
+- `admin_callbacks.py`: کالبک‌های مربوط به پنل مدیریت
+- `user_callbacks.py`: کالبک‌های مربوط به کاربران
+- `product_callbacks.py`: کالبک‌های مربوط به محصولات
+- `payment_callbacks.py`: کالبک‌های مربوط به پرداخت‌ها
+- `order_callbacks.py`: کالبک‌های مربوط به سفارش‌ها
+- `cart_callbacks.py`: کالبک‌های مربوط به سبد خرید
 
-### امنیت زیرساخت
-- کانتینری‌سازی با Docker
-- جداسازی شبکه
-- پیکربندی امن پایگاه داده با auth_socket
-- مدیریت متغیرهای محیطی
+### Bot Keyboards
 
-## راه‌اندازی و نصب
+کیبوردهای استفاده شده در برنامه در پوشه `keyboards` قرار دارند و شامل:
 
-### پیش‌نیازها
-- Python 3.12+
-- MySQL 8.0+
-- Redis
-- Docker (اختیاری)
+- `admin_keyboard.py`: کیبوردهای پنل مدیریت
+- `user_keyboard.py`: کیبوردهای کاربران
+- `product_keyboard.py`: کیبوردهای محصولات
+- `payment_keyboard.py`: کیبوردهای پرداخت
+- `main_keyboard.py`: کیبوردهای اصلی برنامه
 
-### راه‌اندازی محیط
-1. کلون کردن مخزن
-2. ایجاد و فعال‌سازی محیط مجازی:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   venv\Scripts\activate     # Windows
-   ```
-3. نصب وابستگی‌ها:
+## نحوه راه‌اندازی
+
+1. فایل `.env` را با تنظیمات مورد نیاز پیکربندی کنید
+2. وابستگی‌ها را نصب کنید:
    ```bash
    pip install -r requirements.txt
    ```
-4. کپی کردن `.env.example` به `.env` و پیکربندی:
+3. پایگاه داده را راه‌اندازی کنید:
    ```bash
-   cp .env.example .env
+   python -m src.core.database
    ```
-5. به‌روزرسانی `.env` با اطلاعات اعتبار:
-   - اطلاعات API تلگرام
-   - اطلاعات پایگاه داده (بدون رمز عبور، با استفاده از auth_socket)
-   - اطلاعات Redis
-   - تنظیمات امنیتی
-
-### Automated Database Setup
-For automated database setup, you can use the `setup_database.py` script. This script automates all database setup steps and properly handles errors:
-
-1. Using auth_socket (recommended):
+4. ربات را اجرا کنید:
    ```bash
-   python scripts/setup_database.py --auth-socket
+   python -m src.main
    ```
 
-2. Using password authentication:
-   ```bash
-   python scripts/setup_database.py --password-auth
-   ```
+## راهنمای ساختار کد
 
-This script automatically:
-- Creates the database
-- Creates the required user
-- Grants necessary permissions
-- Updates the `.env` file with correct database settings
-- Runs Alembic migrations
+### افزودن هندلر جدید
 
-For help and additional options:
-```bash
-python scripts/setup_database.py --help
+برای افزودن یک هندلر جدید، یک تابع با دکوراتور `register_callback` در فایل مربوطه ایجاد کنید:
+
+```python
+@register_callback("action_name")
+async def handle_action(event: events.CallbackQuery.Event, params: List[str]) -> None:
+    """Handle action callback"""
+    # Your code here
 ```
 
-### Manual Database Setup (Legacy Method)
-1. Create database with auth_socket authentication:
+### افزودن کیبورد جدید
+
+برای افزودن یک کیبورد جدید، یک تابع در فایل مربوطه در پوشه `keyboards` ایجاد کنید:
+
+```python
+def get_new_keyboard() -> List[List[Button]]:
+    """
+    Get the keyboard for new action
+    
+    Returns:
+        List of button rows
+    """
+    return [
+        [
+            Button.inline("Button 1", "action:param1"),
+            Button.inline("Button 2", "action:param2")
+        ],
+        [
+            Button.inline("« بازگشت", "navigation:main_menu")
+        ]
+    ]
+```
+
+## Features
+
+### Role-Based System
+- **Buyer**: Browse and purchase products, pay via wallet or direct payment
+- **Seller**: List products, receive drop-off locations, manage orders
+- **Cardholder**: Manually verify payments and wallet top-ups
+- **Admin**: Final approval of payments, manage locations and users
+
+### Secure Two-Step Payment Process
+1. Payment is made by buyer
+2. Cardholder verifies the payment
+3. Admin confirms the payment
+4. Funds are released
+
+### Location-Based Delivery System
+- Admin defines safe public locations per city/area
+- Sellers drop products at designated locations
+- Buyers receive location details 15 minutes after drop-off
+- Delivery code verification ensures security
+
+### Wallet System
+- Users can recharge their wallet
+- Two-step verification for all wallet transactions
+- Secure balance management
+
+## Setup Instructions
+
+### Prerequisites
+- Python 3.8+
+- MySQL/MariaDB
+- Redis (for caching and session management)
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/telegram-chain-store.git
+cd telegram-chain-store
+```
+
+2. Create a virtual environment:
    ```bash
-   mysql -u root -p < database_setup.sql
+   python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
-2. Run migrations:
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Configure environment variables:
+   ```bash
+   cp .env.example .env
+# Edit .env with your settings
+```
+
+5. Run database migrations:
    ```bash
    alembic upgrade head
    ```
 
-### اجرای ربات
-1. راه‌اندازی Redis:
+6. Start the bot:
    ```bash
-   redis-server
-   ```
-2. راه‌اندازی ربات:
-   ```bash
-   python src/main.py
-   ```
+python -m src.main
+```
 
-### استقرار با Docker
-1. ساخت و راه‌اندازی کانتینرها:
-   ```bash
-   docker-compose up -d
-   ```
+## Security Features
 
-## تست
+- Manual two-step payment verification
+- Delivery code verification
+- User role validation and access control
+- Input validation and sanitization
+- Error handling and logging
+- Rate limiting for API requests
 
-### انواع تست
-- تست واحد
-- تست یکپارچه‌سازی
-- تست end-to-end
-- تست امنیتی
-- تست عملکرد
+## Development
 
-### اجرای تست‌ها
-1. ایجاد محیط تست:
-   ```bash
-   python -m venv venv_test
-   source venv_test/bin/activate  # Linux/Mac
-   venv_test\Scripts\activate     # Windows
-   ```
-2. نصب وابستگی‌های تست:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. اجرای تست‌ها:
-   ```bash
-   pytest
-   ```
+### Adding New Features
 
-### پوشش تست
-- تست واحد: عملکرد اصلی
-- تست یکپارچه‌سازی: تعاملات اجزا
-- تست E2E: جریان‌های کامل کاربر
-- تست امنیتی: بررسی آسیب‌پذیری‌ها
-- تست عملکرد: تست بار و استرس
+1. Create appropriate models in `src/core/models/`
+2. Implement business logic in `src/core/services/`
+3. Create handlers in `src/bot/handlers/`
+4. Register handlers in `src/bot/common/handlers.py`
 
-## دستورالعمل‌های توسعه
+## License
 
-### سبک کدنویسی
-- پیروی از دستورالعمل‌های PEP 8
-- استفاده از type hints
-- مستندسازی تمام توابع و کلاس‌ها
-- نوشتن تست‌های جامع
-
-### گردش کار Git
-1. ایجاد شاخه feature
-2. اعمال تغییرات
-3. اجرای تست‌ها
-4. ایجاد pull request
-5. بررسی کد
-6. ادغام با main
-
-### دستورالعمل‌های امنیتی
-- عدم commit داده‌های حساس
-- استفاده از متغیرهای محیطی
-- پیروی از بهترین روش‌های امنیتی
-- ممیزی امنیتی منظم
-- استفاده از auth_socket برای احراز هویت پایگاه داده
-
-## نظارت و نگهداری
-
-### ثبت رویدادها
-- ثبت رویدادهای برنامه در پوشه `logs/`
-- ردیابی خطاها
-- ثبت اقدامات کاربر
-- ثبت اقدامات ادمین
-
-### نظارت بر عملکرد
-- ردیابی زمان پاسخ
-- نظارت بر استفاده از منابع
-- نظارت بر نرخ خطا
-- ردیابی فعالیت کاربر
-
-### پشتیبان‌گیری و بازیابی
-- پشتیبان‌گیری منظم از پایگاه داده
-- پشتیبان‌گیری از داده‌های نشست
-- پشتیبان‌گیری از پیکربندی
-- برنامه بازیابی پس از فاجعه
-
-## پشتیبانی و تماس
-
-برای پشتیبانی و سوالات:
-- ایمیل: support@example.com
-- تلگرام: @support_username
-
-## مجوز
-این پروژه تحت مجوز MIT منتشر شده است - برای جزئیات به فایل LICENSE مراجعه کنید.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 
