@@ -1,61 +1,128 @@
 import asyncio
-import logging
 import sys
 import traceback
-from src.core.database import init_db
-from src.bot.common.middleware import setup_bot
-from src.utils.logger import APP_LOGGER as logger, log_error
+import logging
+import os
+from pathlib import Path
 
-print("Starting bot initialization...")
+from src.bot.client import BotClient
+from src.bot.setup import register_handlers
+from src.core.database import Database, create_tables
+from src.utils.logger import setup_logger, log_error
+from src.core.config import load_settings, validate_settings
 
-async def main():
-    """Main entry point for the Telegram Chain Store bot"""
+# Import cart models first to ensure they're available for relationships
+from src.core.models.cart import CartItem, Cart
+# Then import all other models through the package __init__
+from src.core.models import Base
+
+# Initialize logger
+logger = setup_logger("main")
+
+async def setup() -> tuple[Database, BotClient]:
+    """
+    Initialize application components
+    
+    Returns:
+        Tuple containing Database and BotClient instances
+    """
     try:
-        print("Inside main function")
-        logger.info("=" * 50)
-        logger.info("Starting Telegram Chain Store Bot")
-        logger.info("=" * 50)
+        # Ensure logs directory exists
+        Path("logs").mkdir(exist_ok=True)
         
-        # Initialize the database
-        print("Initializing database...")
-        logger.info("Initializing the database...")
-        init_db()
-        print("Database initialized")
-        logger.info("Database initialized successfully")
-
-        # Setup and start the bot
-        print("Setting up bot...")
-        logger.info("Setting up the bot...")
-        client = await setup_bot()
-        print("Bot setup completed")
-        logger.info("Bot setup completed")
-        logger.info("Bot is running and waiting for user interactions...")
-        print("Bot is running...")
-        await client.run_until_disconnected()
+        # Ensure data directory exists
+        Path("data").mkdir(exist_ok=True)
+        
+        logger.info("Starting Chain Store Bot...")
+        
+        # Load application settings
+        settings = load_settings()
+        logger.info("Settings loaded from environment")
+        
+        # Validate settings
+        validate_settings(settings)
+        logger.info("Settings validated successfully")
+        
+        # Initialize database
+        logger.info("Initializing database...")
+        database = Database(settings.database)
+        await database.connect()
+        logger.info("Database initialization completed")
+        
+        # Initialize bot client
+        logger.info("Initializing bot client...")
+        client = BotClient(
+            settings.bot.api_id,
+            settings.bot.api_hash,
+            settings.bot.bot_token
+        )
+        logger.info("Bot client initialized")
+        
+        # Register message handlers
+        logger.info("Registering message handlers...")
+        await register_handlers(client)
+        logger.info("Message handlers registered")
+        
+        # Return initialized components
+        return database, client
     except Exception as e:
-        print(f"Error in main: {e}")
-        print(traceback.format_exc())
-        log_error("Critical error in main application", e)
-        logger.critical(f"Application crashed with error: {str(e)}")
-        logger.critical(traceback.format_exc())
-        sys.exit(1)
+        log_error("Setup failed", e)
+        raise
+
+async def main() -> None:
+    """
+    Main entry point of the application
+    """
+    database = None
+    client = None
+    
+    try:
+        # Setup application
+        database, client = await setup()
+        
+        # Start the bot
+        await client.start()
+        logger.info("Bot started")
+        
+        # Send startup message to admin
+        config = load_settings()
+        admin_id = config.bot.admin_id
+        if admin_id:
+            try:
+                await client.send_message(
+                    admin_id,
+                    "✅ Bot has been started successfully!"
+                )
+                logger.info(f"Startup message sent to admin ID: {admin_id}")
+            except Exception as e:
+                logger.error(f"Failed to send startup message to admin: {str(e)}")
+        
+        # Run the bot until disconnected
+        await client.run_until_disconnected()
+    except KeyboardInterrupt:
+        logger.info("Received keyboard interrupt, shutting down...")
+    except Exception as e:
+        log_error("An unexpected error occurred", e)
+    finally:
+        # Ensure graceful shutdown
+        if client and client.is_connected():
+            logger.info("Disconnecting bot client...")
+            await client.disconnect()
+            logger.info("Bot client disconnected")
+        
+        if database:
+            logger.info("Closing database connection...")
+            await database.disconnect()
+            logger.info("Database connection closed")
+        
+        logger.info("Bot has been shut down")
 
 if __name__ == "__main__":
     try:
-        print("Starting asyncio event loop")
-        logger.info("Initializing asyncio event loop")
         asyncio.run(main())
-    except (KeyboardInterrupt, SystemExit):
+    except KeyboardInterrupt:
         print("Bot stopped by user")
-        logger.info("Bot stopped by user (KeyboardInterrupt/SystemExit)")
     except Exception as e:
-        print(f"Unhandled exception: {e}")
-        print(traceback.format_exc())
-        log_error("Unhandled exception at top level", e)
-        logger.critical(f"Unhandled exception: {str(e)}")
-        logger.critical(traceback.format_exc())
+        print(f"Fatal error: {e}")
+        traceback.print_exc()
         sys.exit(1)
-    finally:
-        print("Bot shutdown complete")
-        logger.info("Bot shutdown complete")
-        logger.info("=" * 50)

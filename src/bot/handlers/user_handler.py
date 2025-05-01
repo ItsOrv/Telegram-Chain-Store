@@ -528,6 +528,270 @@ class UserHandler:
         return Product.get_available()
 
     def get_user_cart(self, user_id: int) -> Any:
-        """Get user's cart"""
+        """Get user's shopping cart"""
         from src.core.models import Cart
         return Cart.get_by_user_id(user_id)
+
+# Standalone function for the callback router
+async def handle_role_selection(event: events.CallbackQuery.Event, selected_role: str) -> None:
+    """
+    Handle role selection for users
+    
+    Args:
+        event: Callback query event
+        selected_role: Selected role (buyer, seller, cardholder)
+    """
+    try:
+        # Get user info
+        sender = await event.get_sender()
+        sender_id = sender.id
+        
+        from src.core.database import get_db_session
+        from src.core.services.user_service import UserService
+        from src.core.models.user import UserRole
+        from src.config.settings import get_settings
+        
+        # Map selected_role string to UserRole enum
+        role_map = {
+            "buyer": UserRole.BUYER,
+            "seller": UserRole.SELLER,
+            "cardholder": UserRole.CARDHOLDER,
+            "admin": UserRole.ADMIN
+        }
+        
+        # Get settings
+        settings = get_settings()
+        
+        # For buyers, we don't need to do anything as it's the default
+        if selected_role == "buyer":
+            with get_db_session() as session:
+                user_service = UserService(session)
+                user = user_service.get_by_telegram_id(sender_id)
+                
+                if user and user.role != "BUYER":
+                    # Update user role to buyer
+                    user_service.change_role(user.id, UserRole.BUYER)
+                    
+                    # Send confirmation
+                    await event.answer("Your role has been set to Buyer!", alert=True)
+                else:
+                    await event.answer("You are already registered as a Buyer")
+                
+                # Show appropriate keyboard
+                from src.bot.keyboards.main_keyboard import get_start_keyboard
+                await event.edit(
+                    "🛒 You have selected Buyer role. You can now browse and purchase products.",
+                    buttons=get_start_keyboard()
+                )
+        
+        # For sellers and cardholders, check if the user is authorized
+        elif selected_role in ["seller", "cardholder"]:
+            with get_db_session() as session:
+                user_service = UserService(session)
+                user = user_service.get_by_telegram_id(sender_id)
+                
+                if not user:
+                    await event.answer("User not found. Please use /start first.", alert=True)
+                    return
+                
+                # Check if this is an admin
+                is_admin = (sender_id == settings.HEAD_ADMIN_ID)
+                
+                if is_admin:
+                    # Admins can freely change their role
+                    new_role = role_map.get(selected_role, UserRole.BUYER)
+                    user_service.change_role(user.id, new_role)
+                    
+                    # Send confirmation with appropriate keyboard
+                    if new_role == UserRole.SELLER:
+                        from src.bot.keyboards.main_keyboard import get_seller_start_keyboard
+                        await event.edit(
+                            "🏪 You have selected Seller role. You can now add and sell products.",
+                            buttons=get_seller_start_keyboard()
+                        )
+                    else:
+                        from src.bot.keyboards.main_keyboard import get_cardholder_start_keyboard
+                        await event.edit(
+                            "💳 You have selected Cardholder role. You can now verify payments.",
+                            buttons=get_cardholder_start_keyboard()
+                        )
+                        
+                    await event.answer(f"Your role has been set to {selected_role.capitalize()}!")
+                else:
+                    # Regular users need to request authorization
+                    await event.answer(
+                        f"To become a {selected_role}, please contact the administrator. "
+                        f"Meanwhile, you'll be using the buyer role.",
+                        alert=True
+                    )
+                    
+                    # Show buyer keyboard
+                    from src.bot.keyboards.main_keyboard import get_start_keyboard
+                    await event.edit(
+                        f"⏳ Your request to become a {selected_role.capitalize()} has been noted. "
+                        f"Until approved, you can use the Buyer features.",
+                        buttons=get_start_keyboard()
+                    )
+        
+        # Unknown role
+        else:
+            await event.answer("Unknown role selected. Please try again.", alert=True)
+    
+    except Exception as e:
+        from src.utils.logger import log_error
+        sender_id = getattr(getattr(event, "sender", None), "id", 0)
+        log_error("Error in handle_role_selection", e, sender_id)
+        await event.answer("An error occurred. Please try again later.", alert=True)
+
+async def handle_user_management_action(event: events.CallbackQuery.Event, action: str) -> None:
+    """
+    Handle user management actions from callbacks
+    
+    Args:
+        event: Callback query event
+        action: Action to perform (ban, unban, etc.)
+    """
+    try:
+        # Get user info
+        sender = await event.get_sender()
+        sender_id = sender.id
+        
+        from src.core.database import get_db_session
+        from src.core.services.user_service import UserService
+        from src.core.models.user import UserRole
+        
+        # Check if user is admin
+        with get_db_session() as session:
+            user_service = UserService(session)
+            user = user_service.get_by_telegram_id(sender_id)
+            
+            if not user or user.role != UserRole.ADMIN:
+                await event.answer("You don't have permission to manage users.", alert=True)
+                return
+        
+        # Handle different actions
+        if action == "list":
+            # List all users
+            with get_db_session() as session:
+                users = session.query(User).limit(10).all()
+                
+                if not users:
+                    await event.answer("No users found.", alert=True)
+                    return
+                
+                users_text = "👥 **Users**\n\n"
+                for user in users:
+                    users_text += f"ID: {user.id} | Role: {user.role} | @{user.username or 'No username'}\n"
+                
+                # Send the user list
+                await event.respond(users_text, 
+                                   buttons=[
+                                       [Button.inline("صفحه بعد", "admin:users:next_page")],
+                                       [Button.inline("« بازگشت", "admin:panel")]
+                                   ])
+                
+        elif action == "search":
+            # Show search prompt
+            await event.edit(
+                "Enter the username or ID of the user you want to find:",
+                buttons=[Button.inline("« Cancel", "admin:panel")]
+            )
+            
+        elif action in ["ban", "unban", "suspend", "activate"]:
+            # These actions require a user ID
+            await event.edit(
+                f"Enter the ID of the user you want to {action}:",
+                buttons=[Button.inline("« Cancel", "admin:panel")]
+            )
+        
+        else:
+            await event.answer("Unknown action.", alert=True)
+    
+    except Exception as e:
+        from src.utils.logger import log_error
+        sender_id = getattr(getattr(event, "sender", None), "id", 0)
+        log_error(f"Error in handle_user_management_action: {action}", e, sender_id)
+        await event.answer("An error occurred. Please try again later.", alert=True)
+
+async def handle_profile_action(event: events.CallbackQuery.Event, action: str) -> None:
+    """
+    Handle profile-related actions
+    
+    Args:
+        event: Callback query event
+        action: Profile action (view, edit, etc.)
+    """
+    try:
+        # Get user info
+        sender = await event.get_sender()
+        sender_id = sender.id
+        
+        from src.core.database import get_db_session
+        from src.core.services.user_service import UserService
+        
+        with get_db_session() as session:
+            user_service = UserService(session)
+            user = user_service.get_by_telegram_id(sender_id)
+            
+            if not user:
+                await event.answer("User not found. Please start the bot first.", alert=True)
+                return
+        
+        # Handle different actions
+        if action == "view":
+            # Generate profile message
+            profile_message = (
+                f"👤 **Your Profile**\n\n"
+                f"**ID:** {user.id}\n"
+                f"**Role:** {user.role}\n"
+                f"**Status:** {user.status}\n"
+                f"**Balance:** {user.balance}\n"
+                f"**Joined:** {user.joined_at.strftime('%Y-%m-%d')}\n"
+                f"**Last Login:** {user.last_login.strftime('%Y-%m-%d %H:%M')}\n"
+            )
+            
+            # Show profile keyboard
+            from src.bot.keyboards.profile_keyboard import get_profile_keyboard
+            await event.edit(profile_message, buttons=get_profile_keyboard())
+                
+        elif action == "cart":
+            # Show user's cart
+            from src.bot.keyboards.main_keyboard import get_start_keyboard
+            await event.edit(
+                "🛒 Your Cart\n\nYour cart is currently empty.",
+                buttons=[[Button.inline("« بازگشت", "navigation:main_menu")]]
+            )
+            
+        elif action == "orders":
+            # Show user's orders
+            await event.edit(
+                "📦 Your Orders\n\nYou haven't placed any orders yet.",
+                buttons=[[Button.inline("« بازگشت", "navigation:main_menu")]]
+            )
+            
+        elif action == "wallet":
+            # Show user's wallet
+            wallet_message = (
+                f"💰 **Your Wallet**\n\n"
+                f"**Current Balance:** {user.balance}\n\n"
+                f"You can add funds to your wallet by contacting the administrator."
+            )
+            
+            # Wallet actions
+            from telethon import Button
+            buttons = [
+                [Button.inline("💸 Add Funds", "payment:add")],
+                [Button.inline("📋 Transaction History", "payment:history")],
+                [Button.inline("« بازگشت", "navigation:main_menu")]
+            ]
+            
+            await event.edit(wallet_message, buttons=buttons)
+            
+        else:
+            await event.answer("Unknown profile action.", alert=True)
+    
+    except Exception as e:
+        from src.utils.logger import log_error
+        sender_id = getattr(getattr(event, "sender", None), "id", 0)
+        log_error(f"Error in handle_profile_action: {action}", e, sender_id)
+        await event.answer("An error occurred. Please try again later.", alert=True)
