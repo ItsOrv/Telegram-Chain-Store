@@ -71,6 +71,10 @@ def get_admin_products_keyboard() -> List[List[Button]]:
     """
     return [
         [
+            Button.inline("➕ افزودن محصول", "admin:products:add"),
+            Button.inline("➕ افزودن محصول برای فروشنده", "admin:products:add_for_seller")
+        ],
+        [
             Button.inline("🔍 جستجوی محصول", "admin:products:search"),
             Button.inline("📦 لیست محصولات", "admin:products:list")
         ],
@@ -96,12 +100,16 @@ def get_admin_locations_keyboard() -> List[List[Button]]:
     """
     return [
         [
-            Button.inline("➕ افزودن مکان جدید", "admin:locations:add"),
-            Button.inline("📍 لیست مکان‌ها", "admin:locations:list")
+            Button.inline("🏙️ مدیریت استان‌ها", "admin:locations:provinces"),
+            Button.inline("🏘️ مدیریت شهرها", "admin:locations:cities")
         ],
         [
-            Button.inline("🏙️ مدیریت شهرها", "admin:locations:cities"),
-            Button.inline("🏘️ مدیریت مناطق", "admin:locations:areas")
+            Button.inline("📍 مدیریت مناطق", "admin:locations:areas"),
+            Button.inline("🏠 مدیریت مکان‌ها", "admin:locations:places")
+        ],
+        [
+            Button.inline("➕ افزودن مکان جدید", "admin:locations:add"),
+            Button.inline("📍 لیست مکان‌ها", "admin:locations:list")
         ],
         [
             Button.inline("❌ حذف مکان", "admin:locations:delete"),
@@ -121,11 +129,11 @@ def get_admin_payments_keyboard() -> List[List[Button]]:
     """
     return [
         [
-            Button.inline("✅ تأیید پرداخت‌ها", "admin:payments:approve"),
-            Button.inline("❌ رد پرداخت‌ها", "admin:payments:reject")
+            Button.inline("🔄 پرداخت‌های معلق", "admin:payments:pending"),
+            Button.inline("✅ پرداخت‌های تأیید شده", "admin:payments:approved")
         ],
         [
-            Button.inline("🔄 پرداخت‌های معلق", "admin:payments:pending"),
+            Button.inline("❌ پرداخت‌های رد شده", "admin:payments:rejected"),
             Button.inline("💰 شارژهای کیف پول", "admin:payments:wallet_charges")
         ],
         [
@@ -220,20 +228,24 @@ class AdminKeyboards(BaseKeyboard):
         """دکمه‌های منوی اصلی ادمین"""
         return [
             [
-                Button.inline(KeyboardTexts.ADMIN_USERS, "admin:users"),
-                Button.inline(KeyboardTexts.ADMIN_PRODUCTS, "admin:products")
+                Button.inline("👥 مدیریت کاربران", "admin:users"),
+                Button.inline("📦 مدیریت محصولات", "admin:products")
             ],
             [
-                Button.inline(KeyboardTexts.ADMIN_ORDERS, "admin:orders"),
-                Button.inline(KeyboardTexts.ADMIN_PAYMENTS, "admin:payments")
+                Button.inline("📍 مدیریت مکان‌ها", "admin:locations"),
+                Button.inline("🛒 مدیریت سفارشات", "admin:orders")
             ],
             [
-                Button.inline(KeyboardTexts.ADMIN_REPORTS, "admin:reports"),
-                Button.inline(KeyboardTexts.ADMIN_SETTINGS, "admin:settings")
+                Button.inline("💳 مدیریت پرداخت‌ها", "admin:payments"),
+                Button.inline("👨‍💼 مدیریت فروشندگان", "admin:sellers")
             ],
             [
-                Button.inline(KeyboardTexts.ADMIN_BROADCAST, "admin:broadcast"),
-                Button.inline(KeyboardTexts.EXIT_ADMIN, "exit_admin")
+                Button.inline("📊 گزارش‌ها", "admin:reports"),
+                Button.inline("📂 پایگاه داده", "admin:database")
+            ],
+            [
+                Button.inline("⚙️ تنظیمات", "admin:settings"),
+                Button.inline("🔙 بازگشت", "back_to_main")
             ]
         ]
     
@@ -242,16 +254,20 @@ class AdminKeyboards(BaseKeyboard):
         """دکمه‌های تنظیمات ادمین"""
         return [
             [
-                Button.inline(KeyboardTexts.BOT_SETTINGS, "admin:settings:bot"),
-                Button.inline(KeyboardTexts.SHOP_SETTINGS, "admin:settings:shop")
+                Button.inline("🤖 تنظیمات ربات", "admin:settings:bot"),
+                Button.inline("🛒 تنظیمات فروشگاه", "admin:settings:shop")
             ],
             [
-                Button.inline(KeyboardTexts.PAYMENT_SETTINGS, "admin:settings:payment"),
-                Button.inline(KeyboardTexts.SHIPPING_SETTINGS, "admin:settings:shipping")
+                Button.inline("💳 تنظیمات پرداخت", "admin:settings:payment"),
+                Button.inline("🚚 تنظیمات ارسال", "admin:settings:shipping")
             ],
             [
-                Button.inline(KeyboardTexts.BACKUP_SETTINGS, "admin:settings:backup"),
-                Button.inline(KeyboardTexts.BACK, "admin:back")
+                Button.inline("💾 پشتیبان‌گیری", "admin:settings:backup"),
+                Button.inline("🔔 تنظیمات اعلان‌ها", "admin:settings:notifications")
+            ],
+            [
+                Button.inline("📱 تنظیمات پیام‌ها", "admin:settings:messages"),
+                Button.inline("« بازگشت", "admin:back")
             ]
         ]
     
@@ -443,4 +459,284 @@ class ReportKeyboards:
                 Button.inline("📝 CSV", "admin:reports:export:csv"),
                 Button.inline("« بازگشت", "admin:reports:back")
             ]
-        ] 
+        ]
+
+class DatabaseManagementKeyboards:
+    """کلاس مدیریت کیبوردهای پایگاه داده"""
+    
+    @staticmethod
+    def get_database_management_keyboard() -> List[List[Button]]:
+        """دکمه‌های مدیریت پایگاه داده"""
+        return [
+            [
+                Button.inline("📤 پشتیبان‌گیری", "admin:database:backup"),
+                Button.inline("📥 بازیابی", "admin:database:restore")
+            ],
+            [
+                Button.inline("🔄 بهینه‌سازی", "admin:database:optimize"),
+                Button.inline("📊 آمار پایگاه داده", "admin:database:stats")
+            ],
+            [
+                Button.inline("❌ حذف داده‌های قدیمی", "admin:database:cleanup"),
+                Button.inline("« بازگشت", "admin:back")
+            ]
+        ]
+    
+    @staticmethod
+    def get_backup_options() -> List[List[Button]]:
+        """دکمه‌های گزینه‌های پشتیبان‌گیری"""
+        return [
+            [
+                Button.inline("📤 پشتیبان‌گیری کامل", "admin:database:backup:full"),
+                Button.inline("📤 پشتیبان‌گیری ساختار", "admin:database:backup:structure")
+            ],
+            [
+                Button.inline("📤 پشتیبان‌گیری داده‌ها", "admin:database:backup:data"),
+                Button.inline("📤 پشتیبان‌گیری تنظیمات", "admin:database:backup:settings")
+            ],
+            [
+                Button.inline("« بازگشت", "admin:database:back")
+            ]
+        ]
+    
+    @staticmethod
+    def get_restore_options(backups: List) -> List[List[Button]]:
+        """دکمه‌های گزینه‌های بازیابی"""
+        buttons = []
+        
+        for backup in backups:
+            backup_id = backup.id
+            backup_date = backup.created_at.strftime("%Y-%m-%d %H:%M")
+            backup_type = backup.backup_type
+            
+            # دکمه هر پشتیبان
+            buttons.append([Button.inline(
+                f"📥 {backup_type} - {backup_date}", 
+                f"admin:database:restore:view:{backup_id}"
+            )])
+        
+        buttons.append([Button.inline("« بازگشت", "admin:database:back")])
+        
+        return buttons
+    
+    @staticmethod
+    def get_restore_confirmation(backup_id: str) -> List[List[Button]]:
+        """دکمه‌های تأیید بازیابی"""
+        return [
+            [
+                Button.inline("✅ بازیابی", f"admin:database:restore:confirm:{backup_id}"),
+                Button.inline("❌ انصراف", "admin:database:restore:cancel")
+            ]
+        ]
+
+class PendingOrdersKeyboards:
+    """کلاس مدیریت کیبوردهای سفارشات در حال انجام"""
+    
+    @staticmethod
+    def get_pending_orders_keyboard() -> List[List[Button]]:
+        """دکمه‌های مدیریت سفارشات در حال انجام"""
+        return [
+            [
+                Button.inline("🕒 در انتظار تأیید", "admin:pending:waiting_approval"),
+                Button.inline("💳 در انتظار پرداخت", "admin:pending:waiting_payment")
+            ],
+            [
+                Button.inline("📦 در حال آماده‌سازی", "admin:pending:preparing"),
+                Button.inline("🚚 در حال ارسال", "admin:pending:shipping")
+            ],
+            [
+                Button.inline("« بازگشت", "admin:back")
+            ]
+        ]
+    
+    @staticmethod
+    def get_pending_order_actions(order_id: str) -> List[List[Button]]:
+        """دکمه‌های عملیات سفارشات در حال انجام"""
+        return [
+            [
+                Button.inline("✅ تأیید سفارش", f"admin:pending:approve:{order_id}"),
+                Button.inline("❌ رد سفارش", f"admin:pending:reject:{order_id}")
+            ],
+            [
+                Button.inline("👁 مشاهده جزئیات", f"admin:pending:details:{order_id}"),
+                Button.inline("📝 افزودن یادداشت", f"admin:pending:note:{order_id}")
+            ],
+            [
+                Button.inline("« بازگشت", "admin:pending:back")
+            ]
+        ]
+    
+    @staticmethod
+    def get_pending_order_list(orders: List, page: int = 1, total_pages: int = 1) -> List[List[Button]]:
+        """دکمه‌های لیست سفارشات در حال انجام با عملیات‌های مربوطه"""
+        buttons = []
+        
+        for order in orders:
+            order_id = order.id
+            order_number = order.order_number
+            order_status = order.status
+            
+            # دکمه اصلی سفارش
+            buttons.append([Button.inline(
+                f"🛒 سفارش #{order_number} - {order_status}", 
+                f"admin:pending:view:{order_id}"
+            )])
+            
+            # دکمه‌های عملیات سفارش
+            buttons.append([
+                Button.inline("✅ تأیید", f"admin:pending:approve:{order_id}"),
+                Button.inline("❌ رد", f"admin:pending:reject:{order_id}"),
+                Button.inline("👁 جزئیات", f"admin:pending:details:{order_id}")
+            ])
+        
+        # دکمه‌های صفحه‌بندی
+        pagination = []
+        if page > 1:
+            pagination.append(Button.inline("« صفحه قبل", f"admin:pending:page:{page-1}"))
+        
+        if page < total_pages:
+            pagination.append(Button.inline("صفحه بعد »", f"admin:pending:page:{page+1}"))
+            
+        if pagination:
+            buttons.append(pagination)
+        
+        buttons.append([Button.inline("« بازگشت", "admin:back")])
+        
+        return buttons
+
+class PendingPaymentsKeyboards:
+    """کلاس مدیریت کیبوردهای پرداخت‌های در انتظار تأیید"""
+    
+    @staticmethod
+    def get_pending_payments_list(payments: List, page: int = 1, total_pages: int = 1) -> List[List[Button]]:
+        """دکمه‌های لیست پرداخت‌های در انتظار تأیید با عملیات‌های مربوطه"""
+        buttons = []
+        
+        for payment in payments:
+            payment_id = payment.id
+            payment_amount = payment.amount
+            payment_user = payment.user_id or "ناشناس"
+            
+            # دکمه اصلی پرداخت
+            buttons.append([Button.inline(
+                f"💰 پرداخت #{payment_id} - {payment_amount} - کاربر {payment_user}", 
+                f"admin:payments:view:{payment_id}"
+            )])
+            
+            # دکمه‌های عملیات پرداخت
+            buttons.append([
+                Button.inline("✅ تأیید", f"admin:payments:approve:{payment_id}"),
+                Button.inline("❌ رد", f"admin:payments:reject:{payment_id}"),
+                Button.inline("👁 جزئیات", f"admin:payments:details:{payment_id}")
+            ])
+        
+        # دکمه‌های صفحه‌بندی
+        pagination = []
+        if page > 1:
+            pagination.append(Button.inline("« صفحه قبل", f"admin:payments:page:{page-1}"))
+        
+        if page < total_pages:
+            pagination.append(Button.inline("صفحه بعد »", f"admin:payments:page:{page+1}"))
+            
+        if pagination:
+            buttons.append(pagination)
+        
+        buttons.append([Button.inline("« بازگشت", "admin:payments:back")])
+        
+        return buttons
+    
+    @staticmethod
+    def get_payment_actions(payment_id: str) -> List[List[Button]]:
+        """دکمه‌های عملیات پرداخت"""
+        return [
+            [
+                Button.inline("✅ تأیید پرداخت", f"admin:payments:approve:{payment_id}"),
+                Button.inline("❌ رد پرداخت", f"admin:payments:reject:{payment_id}")
+            ],
+            [
+                Button.inline("👁 مشاهده جزئیات", f"admin:payments:details:{payment_id}"),
+                Button.inline("📝 افزودن یادداشت", f"admin:payments:note:{payment_id}")
+            ],
+            [
+                Button.inline("« بازگشت", "admin:payments:back")
+            ]
+        ]
+    
+    @staticmethod
+    def get_payment_confirmation(payment_id: str, action: str) -> List[List[Button]]:
+        """دکمه‌های تأیید عملیات پرداخت"""
+        action_text = "تأیید" if action == "approve" else "رد"
+        return [
+            [
+                Button.inline(f"✅ {action_text} پرداخت", f"admin:payments:{action}:confirm:{payment_id}"),
+                Button.inline("❌ انصراف", f"admin:payments:cancel:{payment_id}")
+            ]
+        ]
+
+class SellerManagementKeyboards:
+    """کلاس مدیریت کیبوردهای مدیریت فروشندگان"""
+    
+    @staticmethod
+    def get_seller_management_keyboard() -> List[List[Button]]:
+        """دکمه‌های مدیریت فروشندگان"""
+        return [
+            [
+                Button.inline("👥 لیست فروشندگان", "admin:sellers:list"),
+                Button.inline("➕ افزودن فروشنده", "admin:sellers:add")
+            ],
+            [
+                Button.inline("🔍 جستجوی فروشنده", "admin:sellers:search"),
+                Button.inline("🚫 فروشندگان مسدود", "admin:sellers:blocked")
+            ],
+            [
+                Button.inline("⏳ درخواست‌های ثبت‌نام", "admin:sellers:requests"),
+                Button.inline("« بازگشت", "admin:back")
+            ]
+        ]
+    
+    @staticmethod
+    def get_seller_actions(seller_id: str) -> List[List[Button]]:
+        """دکمه‌های عملیات فروشنده"""
+        return [
+            [
+                Button.inline("📝 ویرایش اطلاعات", f"admin:sellers:edit:{seller_id}"),
+                Button.inline("📦 محصولات فروشنده", f"admin:sellers:products:{seller_id}")
+            ],
+            [
+                Button.inline("🛒 سفارشات فروشنده", f"admin:sellers:orders:{seller_id}"),
+                Button.inline("💰 حساب مالی", f"admin:sellers:wallet:{seller_id}")
+            ],
+            [
+                Button.inline("🚫 مسدود کردن", f"admin:sellers:block:{seller_id}"),
+                Button.inline("« بازگشت", "admin:sellers:back")
+            ]
+        ]
+    
+    @staticmethod
+    def get_seller_list_keyboard(page: int = 1, total_pages: int = 1) -> List[List[Button]]:
+        """دکمه‌های لیست فروشندگان"""
+        buttons = []
+        
+        # دکمه‌های صفحه‌بندی
+        pagination = []
+        if page > 1:
+            pagination.append(Button.inline("« صفحه قبل", f"admin:sellers:list:{page-1}"))
+        
+        if page < total_pages:
+            pagination.append(Button.inline("صفحه بعد »", f"admin:sellers:list:{page+1}"))
+            
+        if pagination:
+            buttons.append(pagination)
+            
+        # دکمه‌های فیلتر
+        buttons.append([
+            Button.inline("🔍 فیلتر", "admin:sellers:filter"),
+            Button.inline("🔄 بروزرسانی", f"admin:sellers:refresh:{page}")
+        ])
+        
+        # دکمه بازگشت
+        buttons.append([
+            Button.inline("« بازگشت", "admin:sellers:back_to_menu")
+        ])
+        
+        return buttons 

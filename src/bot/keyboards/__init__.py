@@ -10,7 +10,11 @@ from src.bot.keyboards.admin_keyboard import (
     AdminKeyboards, 
     UserManagementKeyboards, 
     OrderManagementKeyboards, 
-    ReportKeyboards
+    ReportKeyboards,
+    DatabaseManagementKeyboards,
+    PendingOrdersKeyboards,
+    PendingPaymentsKeyboards,
+    SellerManagementKeyboards
 )
 
 # کیبوردهای کاربر
