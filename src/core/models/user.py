@@ -71,6 +71,7 @@ class User(Base):
     notifications = relationship("Notification", back_populates="user")
     user_notifications = relationship("UserNotification", back_populates="user")
     cart_items = relationship("CartItem", back_populates="user")
+    wallet = relationship("Wallet", uselist=False, back_populates="user", cascade="all, delete-orphan")
     # Add other relationships as needed
     
     def to_model(self) -> BaseUser:

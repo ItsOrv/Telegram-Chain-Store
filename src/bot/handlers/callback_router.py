@@ -75,6 +75,26 @@ def register_callback_handlers(client: TelegramClient) -> None:
     from src.bot.handlers.admin_callbacks import register_admin_callbacks
     register_admin_callbacks()
     
+    # Register location callbacks
+    from src.bot.handlers.location_callbacks import register_location_callbacks
+    register_location_callbacks()
+    
+    # Register province management callbacks
+    from src.bot.handlers.province_management_handler import register_province_management_callbacks
+    register_province_management_callbacks()
+    
+    # Register seller management callbacks
+    from src.bot.handlers.seller_management_handler import register_seller_management_callbacks
+    register_seller_management_callbacks()
+    
+    # Register pending payments callbacks
+    from src.bot.handlers.pending_payments_handler import register_pending_payments_callbacks
+    register_pending_payments_callbacks()
+    
+    # Register database management callbacks
+    from src.bot.handlers.database_management_handler import register_database_management_callbacks
+    register_database_management_callbacks()
+    
     # Register navigation callback handler
     @register_callback("navigation")
     async def handle_navigation(event: events.CallbackQuery.Event, params: List[str]) -> None:
@@ -248,83 +268,102 @@ def register_callback_handlers(client: TelegramClient) -> None:
                     await event.edit("Location selected. What would you like to do next?", buttons=get_start_keyboard())
                     
                 else:
-                    await event.answer("Unknown action", alert=True)
+                    await event.answer("Invalid location action", alert=True)
                     
         except Exception as e:
             log_error(f"Error in handle_location_actions", e, event.sender_id)
             await event.answer("An error occurred. Please try again later.", alert=True)
     
-    # The main callback handler
+    # Register the callback handler with the client
     @client.on(events.CallbackQuery())
     async def callback_handler(event: events.CallbackQuery.Event) -> None:
-        """Handle callback queries from inline buttons"""
         try:
-            # The callback data is a string that needs to be parsed
+            # Parse callback data
             data = event.data.decode('utf-8')
-            
-            # Parse callback data format: action:param1:param2...
             parts = data.split(':')
+            
+            if not parts:
+                logger.warning("Empty callback data received")
+                await event.answer("Invalid callback data", alert=True)
+                return
+                
             action = parts[0]
             params = parts[1:] if len(parts) > 1 else []
             
-            # Route callback to appropriate handler
+            # Log the callback
+            logger.info(f"Callback received: action={action}, params={params}, user_id={event.sender_id}")
+            
+            # Route to the appropriate handler
             await route_callback(event, action, params)
+            
         except Exception as e:
-            sender = await event.get_sender()
-            log_error(f"Error in callback_handler with data {event.data.decode('utf-8')}", e, sender.id)
-            await event.answer("An error occurred. Please try again later.", alert=True)
-    
-    logger.info("Callback handlers registered")
+            log_error(f"Error processing callback: {str(e)}", e, event.sender_id)
+            await event.answer("An error occurred processing your request. Please try again later.", alert=True)
+            # Try to show an error message in chat
+            try:
+                await event.edit("⚠️ An error occurred processing your request. Please try again later.")
+            except:
+                pass
 
 async def handle_info(event: events.CallbackQuery.Event, info_type: str) -> None:
     """
-    Handle information display actions
+    Handle showing informational content
     
     Args:
-        event: Callback query event
-        info_type: Type of information to display
+        event: The callback query event
+        info_type: Type of information to show
     """
     try:
-        if info_type == "terms":
-            # Display terms and conditions
-            terms_text = (
-                "**شرایط و قوانین**\n\n"
-                "با استفاده از این ربات، شما موافقت می‌کنید که از قوانین زیر پیروی کنید:\n\n"
-                "1. تمام تراکنش‌ها به صورت دستی تایید می‌شوند\n"
-                "2. تحویل کالا فقط در مکان‌های تعیین شده انجام می‌شود\n"
-                "3. مدیران ربات مسئولیتی در قبال سوء استفاده ندارند\n"
-                "4. فروش کالاهای ممنوعه مجاز نیست\n\n"
-                "برای مشاهده قوانین کامل، لطفاً به وب‌سایت ما مراجعه کنید."
+        if info_type == "help":
+            # Show help information
+            message = (
+                "ℹ️ **Help**\n\n"
+                "Here are some useful commands:\n\n"
+                "/start - Start the bot\n"
+                "/help - Show this help message\n"
+                "/settings - Configure your account settings\n"
+                "/cancel - Cancel current operation\n\n"
+                "For more help, contact our support team."
             )
-            await event.edit(terms_text, buttons=[Button.inline("« بازگشت", "navigation:main_menu")])
+            
+            await event.edit(message, buttons=[
+                [Button.inline("« Back", "navigation:main_menu")]
+            ])
             
         elif info_type == "about":
-            # Display about information
-            about_text = (
-                "**درباره ربات Chain Store**\n\n"
-                "این ربات یک بازارچه امن با سیستم تایید پرداخت دستی "
-                "و سیستم تحویل مبتنی بر مکان فراهم می‌کند.\n\n"
-                "نسخه: 1.0.0\n"
-                "ارتباط: @admin_contact"
+            # Show about information
+            message = (
+                "ℹ️ **About**\n\n"
+                "This is a Telegram Chain Store Bot that allows users to buy and sell products safely "
+                "using a secure delivery system through public drop-off points.\n\n"
+                "Version: 1.0.0\n"
+                "Developed by: Chain Store Team\n"
             )
-            await event.edit(about_text, buttons=[Button.inline("« بازگشت", "navigation:main_menu")])
             
-        elif info_type == "help":
-            # Display help information
-            help_text = (
-                "**راهنمای استفاده**\n\n"
-                "نحوه استفاده از ربات:\n\n"
-                "1. **ثبت‌نام** به عنوان خریدار، فروشنده یا کاردار\n"
-                "2. **مشاهده محصولات** اگر خریدار هستید\n"
-                "3. **افزودن محصول** اگر فروشنده هستید\n"
-                "4. **تایید پرداخت‌ها** اگر کاردار هستید\n\n"
-                "از دستور /help برای راهنمای اختصاصی هر نقش استفاده کنید."
+            await event.edit(message, buttons=[
+                [Button.inline("« Back", "navigation:main_menu")]
+            ])
+            
+        elif info_type == "terms":
+            # Show terms and conditions
+            message = (
+                "📜 **Terms & Conditions**\n\n"
+                "By using this bot, you agree to our terms and conditions:\n\n"
+                "• All transactions are final\n"
+                "• We are not responsible for lost or damaged items\n"
+                "• Users must verify receipt of items\n"
+                "• Sellers must deliver items within 24 hours\n"
+                "• Both buyers and sellers must follow the verification protocol\n\n"
+                "For full terms, visit our website."
             )
-            await event.edit(help_text, buttons=[Button.inline("« بازگشت", "navigation:main_menu")])
+            
+            await event.edit(message, buttons=[
+                [Button.inline("« Back", "navigation:main_menu")]
+            ])
             
         else:
-            await event.answer("نوع اطلاعات ناشناخته است", alert=True)
+            await event.answer("Invalid information type", alert=True)
             
     except Exception as e:
-        log_error(f"Error in handle_info with info_type {info_type}", e)
-        await event.answer("خطا در نمایش اطلاعات. لطفاً دوباره تلاش کنید.", alert=True) 
+        log_error(f"Error in handle_info", e, event.sender_id)
+        await event.answer("An error occurred. Please try again later.", alert=True) 

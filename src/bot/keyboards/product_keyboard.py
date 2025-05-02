@@ -218,4 +218,35 @@ class CategoryKeyboards:
             [Button.inline("❌ حذف", f"delete_category_{category_id}")],
             [Button.inline("📦 مشاهده محصولات", f"view_category_products_{category_id}")],
             [Button.inline("🔙 بازگشت به دسته‌بندی‌ها", "back_to_categories")]
+        ]
+        
+    @staticmethod
+    def get_admin_category_list(categories: List) -> List[List[Button]]:
+        """دکمه‌های مدیریت دسته‌بندی‌ها برای ادمین با نمایش دکمه‌های ویرایش و حذف برای هر دسته‌بندی"""
+        buttons = []
+        
+        for category in categories:
+            cat_id = category.id
+            cat_name = category.name
+            
+            # دکمه‌های عملیات برای هر دسته‌بندی
+            buttons.append([Button.inline(f"📁 {cat_name}", f"admin:category:view:{cat_id}")])
+            buttons.append([
+                Button.inline("✏️ ویرایش", f"admin:category:edit:{cat_id}"),
+                Button.inline("❌ حذف", f"admin:category:delete:{cat_id}")
+            ])
+        
+        # دکمه افزودن دسته‌بندی جدید
+        buttons.append([Button.inline("➕ افزودن دسته‌بندی", "admin:category:add")])
+        buttons.append([Button.inline("« بازگشت", "admin:products:back")])
+        
+        return buttons
+    
+    @staticmethod
+    def get_seller_category_request() -> List[List[Button]]:
+        """دکمه‌های درخواست افزودن دسته‌بندی برای فروشنده"""
+        return [
+            [Button.inline("➕ درخواست دسته‌بندی جدید", "seller:category:request")],
+            [Button.inline("📋 درخواست‌های قبلی", "seller:category:requests")],
+            [Button.inline("« بازگشت", "seller:back")]
         ] 

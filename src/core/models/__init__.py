@@ -37,7 +37,7 @@ from src.core.models.payment import (
     Payment,
     PaymentMethod,
     PaymentStatus,
-    Transaction
+    Transaction as PaymentTransaction
 )
 
 # Location models
@@ -68,6 +68,14 @@ from src.core.models.notification import (
     NotificationType
 )
 
+# Wallet models
+from src.core.models.wallet import (
+    Wallet,
+    Transaction,
+    TransactionType,
+    TransactionStatus
+)
+
 # All models for database creation
 __all__ = [
     # Base
@@ -84,7 +92,7 @@ __all__ = [
     'Order', 'OrderItem', 'OrderStatus',
     
     # Payment
-    'Payment', 'PaymentMethod', 'PaymentStatus', 'Transaction',
+    'Payment', 'PaymentMethod', 'PaymentStatus', 'PaymentTransaction',
     
     # Location
     'PreLocation', 'MainLocation', 'City', 'Province', 'LocationStatus',
@@ -94,5 +102,8 @@ __all__ = [
     'CartAddress', 'CartPaymentMethod', 'CartHistory', 'SavedCart',
     
     # Notification
-    'Notification', 'NotificationType'
+    'Notification', 'NotificationType',
+    
+    # Wallet
+    'Wallet', 'Transaction', 'TransactionType', 'TransactionStatus'
 ]

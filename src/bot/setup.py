@@ -11,6 +11,7 @@ from src.bot.handlers.seller_handlers import register_seller_commands
 from src.bot.handlers.buyer_handlers import register_buyer_commands
 from src.bot.handlers.cardholder_handlers import register_cardholder_commands
 from src.bot.handlers.callback_router import register_callback_handlers
+from src.bot.handlers.message_handler import register_message_handlers
 import importlib
 import inspect
 import functools
@@ -45,6 +46,9 @@ async def register_handlers(client: TelegramClient) -> None:
         
         # Register general handlers
         register_callback_handlers(client)
+        
+        # Register message handlers for text input
+        await register_message_handlers(client)
         
         # Register inline handlers if exists
         try:
