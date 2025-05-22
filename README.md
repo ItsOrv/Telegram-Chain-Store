@@ -93,4 +93,8 @@ alembic upgrade head
 # Start the bot
 python -m src.main
 ```
+---
 
+## Disclaimer
+
+This project was developed solely for educational purposes to improve my programming skills. The author is not responsible for any misuse, illegal activity, or unintended consequences resulting from the use of this code. Use it at your own risk and always comply with applicable laws and platform terms of service.
