@@ -1,70 +1,56 @@
 ××××
 # I haven’t finished the project yet. I’ll complete it soon when I have a bit more free time.
 ××××
-# Telegram Secure Chain Store Bot
 
-This Telegram bot is a multi-role chain store system featuring secure payments, location-based delivery, an internal wallet system, and support for direct crypto payments (Solana). It is designed with a focus on security, usability, and extensibility.
 
----
+# Telegram Chain Store Bot
+
+This Telegram bot acts as a decentralized chain store with support for anonymous payments, product management, and a location-based delivery system.
 
 ## Features
 
-### Multi-Role System
+### Role-Based System
 
-* **Buyer**:
-  Browse and purchase products, pay via wallet or direct crypto payment, contact support, track orders, and use all buyer-related features.
+* **Buyer**: Browse and purchase products, pay via wallet or direct payment.
 
-* **Seller**:
-  Add new products, choose delivery locations (random public location + detailed secondary address with photo), confirm order drop-offs, and manage sales.
+* **Seller**: Add products, handle the first step of payment approval, and manage deliveries at random public locations in the destination city using a full-featured control keyboard.
 
-* **Cardholder**:
-  Verify user payments, manage wallet top-ups, and control their own cards and funds.
+* **Cardholder**: Manually verify payments and wallet top-ups. Share payment methods (bank card or wallet address) for user payouts and profits.
 
-* **Admin**:
-  Full control over the system including user management, transaction approvals, defining delivery locations, and monitoring all system operations.
+* **Admin**: Final payment approval, location and user management, and full system control.
 
----
+### Secure Two-Step Payment Process
 
-### Location-Based Delivery
+1. Buyer makes a payment.
+2. Cardholder verifies the payment.
+3. Admin confirms the payment.
+4. Funds are released.
 
-* Admin defines secure public locations for each city/region, accessible in the bot as a list.
-* For every new order, a public location is randomly selected.
-* The seller drops the product at the selected location and submits the exact secondary address along with a photo of the spot.
-* The buyer receives the delivery location 15 minutes after the drop-off.
-* Final delivery confirmation is done via a unique security code provided to the buyer.
+### Location-Based Delivery System
 
----
+* Admin defines safe public drop-off locations per city.
+* Sellers deliver products to the assigned locations.
+* Buyers receive location details 15 minutes after drop-off.
+* Delivery is validated using a secure code.
 
-### Secure Two-Step Payment System
+### Wallet System
 
-1. Buyer initiates the payment.
-2. Cardholder verifies and approves the payment.
-3. Admin gives final approval.
-4. Funds are transferred to the seller.
+* Users can top up their wallet.
+* All wallet operations are protected with two-step verification.
+* Secure balance management for every role.
 
-**Direct payments via Solana are also supported with automatic verification.**
+### Security Features
 
----
-
-### Internal Wallet System
-
-* Users can top up their wallet balance.
-* All wallet-related transactions (except Solana payments) require manual two-step verification.
-* Wallet balances are securely managed and auditable.
+* Manual two-step payment verification
+* Delivery code validation
+* Role-based access control
+* Input validation and sanitization
+* Error handling and logging
+* API rate limiting
 
 ---
 
-### Security & Access Control
-
-* Strict role-based access control (RBAC)
-* Manual verification for payments and deliveries
-* Input validation and error logging
-* Request rate limiting to prevent abuse
-* Comprehensive logging and audit trail
-
----
-
-## Installation
+## Setup Instructions
 
 ### Prerequisites
 
@@ -72,32 +58,80 @@ This Telegram bot is a multi-role chain store system featuring secure payments, 
 * MySQL or SQLite
 * Redis (for caching and session management)
 
-### Setup Steps
+### Local Setup
+
+1. Clone the repository:
 
 ```bash
-# Clone the repository
-git clone https://github.com/itsorv/telegram-chain-store.git
+git clone https://github.com/yourusername/telegram-chain-store.git
 cd telegram-chain-store
+```
 
-# Create and activate a virtual environment
-python -m venv venv
-venv\Scripts\activate  # On Linux/macOS: source venv/bin/activate
+2. Install dependencies:
 
-# Install dependencies
+```bash
 pip install -r requirements.txt
+```
 
-# Configure environment variables
+3. Configure environment variables:
+
+```bash
 cp .env.example .env
-# Edit the .env file with your custom settings
+# Edit .env with your configuration
+```
 
-# Run database migrations
+4. Run database migrations:
+
+```bash
 alembic upgrade head
+```
 
-# Start the bot
+5. Start the database manually (optional for SQLite):
+
+```bash
+python -m src.core.database
+```
+
+6. Run the bot:
+
+```bash
 python -m src.main
 ```
+
 ---
 
-## Disclaimer
+## Docker Setup
 
-This project was developed solely for educational purposes to improve my programming skills. The author is not responsible for any misuse, illegal activity, or unintended consequences resulting from the use of this code. Use it at your own risk and always comply with applicable laws and platform terms of service.
+You can also run the bot using Docker for easier deployment.
+
+### 1. Build and Run
+
+```bash
+docker-compose up --build
+```
+
+This will:
+
+* Build the application image
+* Start the database and Redis containers
+* Start the bot service
+
+### 2. Configuration
+
+* Rename and configure the `.env` file:
+
+```bash
+cp .env.example .env
+# Edit .env with your environment variables
+```
+
+### 3. Run Database Migrations
+
+After containers are up, run:
+
+```bash
+docker exec -it <app_container_name> alembic upgrade head
+```
+
+(Replace `<app_container_name>` with your actual container name, usually something like `telegram-chain-store-app-1`)
+
