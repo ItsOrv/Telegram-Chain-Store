@@ -3,7 +3,7 @@ from datetime import datetime
 from core.models import User, Order
 from core.database import SessionLocal
 from bot.telethon_client import telegram_manager
-from config.settings import settings
+from src.config.settings import settings
 import logging
 
 logger = logging.getLogger(__name__)
