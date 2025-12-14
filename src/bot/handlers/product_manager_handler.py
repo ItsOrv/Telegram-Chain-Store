@@ -47,7 +47,7 @@ class ProductManagerHandler:
             try:
                 user_id = event.sender_id
                 with SessionLocal() as db:
-                    seller = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    seller = db.query(User).filter(User.telegram_id == user_id).first()
                     if not seller or seller.role != "SELLER":
                         await event.answer(Messages.UNAUTHORIZED, alert=True)
                         return
@@ -190,7 +190,7 @@ class ProductManagerHandler:
         """Save product to database"""
         try:
             with SessionLocal() as db:
-                seller = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                seller = db.query(User).filter(User.telegram_id == user_id).first()
                 
                 new_product = Product(
                     seller_id=seller.id,
