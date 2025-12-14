@@ -21,7 +21,7 @@ class PaymentMethodHandler:
                 user_id = event.sender_id
                 with SessionLocal() as db:
                     user = db.query(User).filter(
-                        User.telegram_id == str(user_id),
+                        User.telegram_id == user_id,
                         User.role == UserRole.ADMIN
                     ).first()
                     
