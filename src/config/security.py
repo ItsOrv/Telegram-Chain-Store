@@ -22,7 +22,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from config.settings import settings
+from src.config.settings import settings
 
 # تنظیم bcrypt برای هش کردن رمز عبور
 pwd_context = CryptContext(
