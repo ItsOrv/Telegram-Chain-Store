@@ -24,7 +24,7 @@ class ChargeAccountHandler:
             try:
                 user_id = event.sender_id
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     if not user:
                         await event.answer(Messages.UNAUTHORIZED, alert=True)
                         return
@@ -107,11 +107,11 @@ class ChargeAccountHandler:
                         # Get admin user and current user
                         with SessionLocal() as db:
                             admin = db.query(User).filter(
-                                User.telegram_id == str(self.settings.HEAD_ADMIN_ID)
+                                User.telegram_id == self.settings.HEAD_ADMIN_ID
                             ).first()
                             
                             current_user = db.query(User).filter(
-                                User.telegram_id == str(user_id)
+                                User.telegram_id == user_id
                             ).first()
                             
                             if not admin or not current_user:
