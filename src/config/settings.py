@@ -16,7 +16,7 @@ ENV_FILE = PROJECT_ROOT / ".env"
 logger.debug(f"Loading .env file from: {ENV_FILE.absolute()}")
 
 if not ENV_FILE.exists():
-    raise FileNotFoundError(f"Environment file not found at {ENV_FILE}")
+    logger.warning(f"Environment file not found at {ENV_FILE}. Using environment variables only.")
 
 class Settings(BaseSettings):
     # App Settings
@@ -63,7 +63,7 @@ class Settings(BaseSettings):
     REDIS_SOCKET_TIMEOUT: int = 5
     
     # Security Settings
-    SECRET_KEY: str = secrets.token_urlsafe(32)
+    SECRET_KEY: str  # Must be provided via environment variable
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     PASSWORD_MIN_LENGTH: int = 8
@@ -85,6 +85,10 @@ class Settings(BaseSettings):
     # Notification Settings
     ENABLE_NOTIFICATIONS: bool = True
     NOTIFICATION_DELAY: int = 0
+    
+    # Verification Code Settings
+    VERIFY_CODE_LENGTH: int = 6  # Length of verification codes
+    TEMP_TOKEN_LENGTH: int = 32  # Length of temporary tokens
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -95,17 +99,54 @@ class Settings(BaseSettings):
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
+    """
+    Get application settings (cached)
+    
+    Returns:
+        Settings instance
+        
+    Raises:
+        ValueError: If settings cannot be loaded or validated
+    """
     try:
         settings = Settings()
-        # Verify the loaded token
-        logger.debug(f"Loaded BOT_TOKEN from env: {settings.BOT_TOKEN[:10]}...")
+        # Verify the loaded token (only log first few chars for security)
+        if settings.BOT_TOKEN:
+            logger.debug(f"Loaded BOT_TOKEN from env: {settings.BOT_TOKEN[:10]}...")
         return settings
     except Exception as e:
         logger.error(f"Failed to load settings: {e}")
-        raise ValueError(f"Failed to load settings from {ENV_FILE}: {str(e)}")
+        raise ValueError(f"Failed to load settings: {str(e)}")
 
-# Clear the LRU cache for get_settings
-get_settings.cache_clear() if hasattr(get_settings, 'cache_clear') else None
+# Module-level settings instance (lazy-loaded)
+_settings_instance: Optional[Settings] = None
 
-# Force new settings instance
-settings = get_settings()
+def get_settings_instance() -> Settings:
+    """
+    Get or create the settings instance
+    
+    Returns:
+        Settings instance
+    """
+    global _settings_instance
+    if _settings_instance is None:
+        _settings_instance = get_settings()
+    return _settings_instance
+
+# Module-level settings for backward compatibility
+# This will be initialized on first access
+settings: Settings = None  # type: ignore
+
+def _init_settings() -> Settings:
+    """Initialize module-level settings"""
+    global settings
+    if settings is None:
+        settings = get_settings_instance()
+    return settings
+
+# Initialize settings lazily
+try:
+    settings = get_settings_instance()
+except Exception as e:
+    logger.warning(f"Could not initialize settings at module level: {e}")
+    settings = None  # type: ignore
