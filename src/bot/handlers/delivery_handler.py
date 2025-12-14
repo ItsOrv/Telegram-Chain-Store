@@ -190,7 +190,7 @@ class DeliveryHandler:
 
                 with SessionLocal() as db:
                     order = db.query(Order).get(order_id)
-                    if not order or str(order.buyer.telegram_id) != str(user_id):
+                    if not order or order.buyer.telegram_id != user_id:
                         await event.answer("❌ سفارش نامعتبر!", alert=True)
                         return
 
