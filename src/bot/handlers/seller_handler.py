@@ -43,7 +43,7 @@ class SellerHandler:
                 # Check if user is admin
                 user_id = event.sender_id
                 with SessionLocal() as db:
-                    admin = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    admin = db.query(User).filter(User.telegram_id == user_id).first()
                     if admin.role != UserRole.ADMIN:
                         await event.answer(Messages.UNAUTHORIZED, alert=True)
                         return
