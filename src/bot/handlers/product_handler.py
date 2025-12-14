@@ -24,7 +24,7 @@ class ProductHandler:
     # اضافه کردن متد کمکی برای بروزرسانی پیام مشتری
     async def update_customer_products_message(self, user_id, chat_id):
         with SessionLocal() as db:
-            user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+            user = db.query(User).filter(User.telegram_id == user_id).first()
             if not user:
                 return None
             user_city = db.query(UserCity).filter(UserCity.user_id == user.id).first()
@@ -93,7 +93,7 @@ class ProductHandler:
     async def update_cart_message(self, user_id, chat_id):
         """Update cart message with only non-zero quantity items"""
         with SessionLocal() as db:
-            user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+            user = db.query(User).filter(User.telegram_id == user_id).first()
             if not user:
                 return None
                 
@@ -154,7 +154,7 @@ class ProductHandler:
             try:
                 user_id = event.sender_id
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     if not user:
                         await event.answer(Messages.UNAUTHORIZED, alert=True)
                         return
@@ -226,7 +226,7 @@ class ProductHandler:
                 user_id = event.sender_id
                 
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     product = db.query(Product).get(product_id)
                     
                     if not product:
@@ -273,7 +273,7 @@ class ProductHandler:
                 user_id = event.sender_id
                 with SessionLocal() as db:
                     seller = db.query(User).filter(
-                        User.telegram_id == str(user_id),
+                        User.telegram_id == user_id,
                         User.role == "SELLER"
                     ).first()
                     
@@ -306,7 +306,7 @@ class ProductHandler:
                 
                 # Show main menu
                 with SessionLocal() as db:
-                    seller = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    seller = db.query(User).filter(User.telegram_id == user_id).first()
                     if seller:
                         await event.edit(
                             Messages.ADD_PRODUCT_CANCELLED,
@@ -568,7 +568,7 @@ class ProductHandler:
 
                 with SessionLocal() as db:
                     # دریافت کاربر و ذخیره شناسه
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     if not user:
                         await event.answer(Messages.UNAUTHORIZED, alert=True)
                         return
@@ -648,7 +648,7 @@ class ProductHandler:
             try:
                 user_id = event.sender_id
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     if not user:
                         await event.answer(Messages.UNAUTHORIZED, alert=True)
                         return
@@ -697,7 +697,7 @@ class ProductHandler:
                     del self.user_states[user_id]
                 # Show main menu for seller
                 with SessionLocal() as db:
-                    seller = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    seller = db.query(User).filter(User.telegram_id == user_id).first()
                     if seller:
                         await event.respond(
                             Messages.WELCOME_BACK.format(
@@ -799,7 +799,7 @@ class ProductHandler:
         """Save product to database"""
         try:
             with SessionLocal() as db:
-                seller = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                seller = db.query(User).filter(User.telegram_id == user_id).first()
                 
                 if "city_id" not in data:
                     await event.respond(Messages.NO_CITY_SELECTED)
@@ -836,7 +836,7 @@ class ProductHandler:
         try:
             user_id = event.sender_id
             with SessionLocal() as db:
-                user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                user = db.query(User).filter(User.telegram_id == user_id).first()
                 if not user:
                     await event.answer(Messages.UNAUTHORIZED, alert=True)
                     return
