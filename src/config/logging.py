@@ -3,7 +3,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from logging.handlers import RotatingFileHandler
-from config.settings import settings
+from src.config.settings import settings
 
 def setup_logging():
     # Create logs directory if it doesn't exist
