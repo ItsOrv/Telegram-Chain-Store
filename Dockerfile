@@ -32,5 +32,9 @@ RUN mkdir -p logs
 # Set permissions
 RUN chmod +x scripts/*.py
 
-# Run migrations
-CMD ["python", "-m", "alembic", "upgrade", "head", "&&", "python", "main.py"]
+# Create startup script
+RUN echo '#!/bin/bash\nset -e\npython -m alembic upgrade head\npython -m src.main' > /app/start.sh && \
+    chmod +x /app/start.sh
+
+# Run startup script
+CMD ["/app/start.sh"]
