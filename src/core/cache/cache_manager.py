@@ -1,6 +1,6 @@
 from typing import Any, Optional
 import redis
-from config.settings import settings
+from src.config.settings import settings
 import json
 import logging
 
