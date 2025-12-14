@@ -99,15 +99,13 @@ class BotClient(TelegramClient):
             logger.error(f"Failed to send message to admin: {str(e)}")
             return False
 
-    @classmethod
-    async def close(cls) -> None:
+    async def disconnect(self) -> None:
         """
-        Safely close the client connection
+        Safely disconnect the client connection
         """
-        if cls._instance and cls._instance.is_connected():
+        if self.is_connected():
             try:
-                await cls._instance.disconnect()
-                cls._instance = None
+                await super().disconnect()
                 logger.info("Bot connection closed successfully")
             except Exception as e:
                 logger.error(f"Error closing bot connection: {str(e)}")
