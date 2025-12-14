@@ -28,7 +28,7 @@ class SupportHandler:
             try:
                 user_id = event.sender_id
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     if not user:
                         await event.answer(Messages.UNAUTHORIZED, alert=True)
                         return
@@ -55,7 +55,7 @@ class SupportHandler:
                     del self.user_states[user_id]
 
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     if user:
                         from src.bot.common.keyboards import get_role_keyboard
                         await event.edit("✅ گفتگو با پشتیبانی لغو شد.", 
@@ -76,7 +76,7 @@ class SupportHandler:
 
             try:
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     if not user:
                         return
 
