@@ -11,7 +11,7 @@ class NotificationHandler:
     async def show_notification_list(self, event):
         """Show user notifications"""
         with SessionLocal() as db:
-            user = db.query(User).filter(User.telegram_id == str(event.sender_id)).first()
+            user = db.query(User).filter(User.telegram_id == event.sender_id).first()
             notifications = db.query(Notification).filter(Notification.user_id == user.id).all()
             buttons = NotificationKeyboards.get_notifications_list(notifications)
             await event.edit(Messages.NOTIFICATIONS_LIST, buttons=buttons)
@@ -23,7 +23,7 @@ class NotificationHandler:
 
     async def show_notifications(self, event):
         with SessionLocal() as db:
-            user = db.query(User).filter(User.telegram_id == str(event.sender_id)).first()
+            user = db.query(User).filter(User.telegram_id == event.sender_id).first()
             notifications = db.query(Notification).filter(Notification.user_id == user.id).all()
             buttons = NotificationKeyboards.get_notifications_list(notifications)
             await event.edit(Messages.NOTIFICATIONS_LIST, buttons=buttons)
