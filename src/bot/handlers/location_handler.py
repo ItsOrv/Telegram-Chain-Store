@@ -42,7 +42,7 @@ class LocationHandler:
             
             with SessionLocal() as db:
                 # Get user and clear their location
-                user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                user = db.query(User).filter(User.telegram_id == user_id).first()
                 if not user:
                     await event.answer(Messages.UNAUTHORIZED, alert=True)
                     return
@@ -152,7 +152,7 @@ class LocationHandler:
         user_id = event.sender_id
         
         with SessionLocal() as db:
-            user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+            user = db.query(User).filter(User.telegram_id == user_id).first()
             if not user or not user.cities:
                 await self.show_provinces(event)
                 return False
@@ -184,7 +184,7 @@ class LocationHandler:
         """Save user's selected city to database"""
         with SessionLocal() as db:
             # Get user
-            user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+            user = db.query(User).filter(User.telegram_id == user_id).first()
             if not user:
                 await event.answer(Messages.UNAUTHORIZED, alert=True)
                 return
