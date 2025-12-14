@@ -34,7 +34,7 @@ class OrderHandler:
                 user_id = event.sender_id
                 with SessionLocal() as db:
                     # دریافت اطلاعات کاربر و سبد خرید
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     cart_items = db.query(CartItem).filter(
                         CartItem.user_id == user.id,
                         CartItem.quantity > 0
@@ -79,7 +79,7 @@ class OrderHandler:
                     return
 
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     total_amount = Decimal(str(state["total_amount"]))
 
                     if user.balance < total_amount:
