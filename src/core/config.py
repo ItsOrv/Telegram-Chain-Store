@@ -6,6 +6,13 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+# Try to import the unified settings system
+try:
+    from src.config.settings import get_settings as get_pydantic_settings
+    _USE_PYDANTIC_SETTINGS = True
+except ImportError:
+    _USE_PYDANTIC_SETTINGS = False
+
 @dataclass
 class DatabaseConfig:
     """Database configuration settings"""
@@ -76,10 +83,40 @@ class Settings:
 def load_settings() -> Settings:
     """
     Load configuration settings from environment variables
+    Uses pydantic settings if available, otherwise falls back to dataclass-based config
     
     Returns:
         Settings object containing all configuration
     """
+    # Try to use pydantic settings if available
+    if _USE_PYDANTIC_SETTINGS:
+        try:
+            pydantic_settings = get_pydantic_settings()
+            # Convert pydantic settings to dataclass format for compatibility
+            db_config = DatabaseConfig(
+                type=os.getenv("DB_TYPE", "mysql").lower(),
+                host=pydantic_settings.DB_HOST,
+                port=pydantic_settings.DB_PORT,
+                username=pydantic_settings.DB_USER,
+                password=pydantic_settings.DB_PASSWORD,
+                database=pydantic_settings.DB_NAME
+            )
+            bot_config = BotConfig(
+                api_id=pydantic_settings.API_ID,
+                api_hash=pydantic_settings.API_HASH,
+                bot_token=pydantic_settings.BOT_TOKEN,
+                admin_id=pydantic_settings.HEAD_ADMIN_ID
+            )
+            return Settings(
+                database=db_config,
+                bot=bot_config,
+                debug=pydantic_settings.DEBUG
+            )
+        except Exception:
+            # Fall back to original implementation if conversion fails
+            pass
+    
+    # Fallback to original implementation
     return Settings.from_env()
 
 # Validate required settings
