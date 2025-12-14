@@ -20,7 +20,7 @@ def register_handlers(client):
     async def start_handler(event):
         sender = await event.get_sender()
         with SessionLocal() as db:
-            user = db.query(User).filter(User.telegram_id == str(sender.id)).first()
+            user = db.query(User).filter(User.telegram_id == sender.id).first()
             keyboard = RoleKeyboard.get_keyboard("customer" if not user else user.role.lower())
             await event.respond(
                 Messages.WELCOME if not user else Messages.WELCOME_BACK.format(
@@ -84,7 +84,7 @@ from bot.states import *
 from bot.messages import Messages
 from bot.middleware import restrict_access, log_action
 from bot.utils import *
-from config.settings import settings
+from src.config.settings import settings
 from telethon import events, Button
 from core.models import User, Product, Order, ProductImage
 from core.database import SessionLocal
@@ -106,7 +106,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     with SessionLocal() as db:
         try:
-            db_user = db.query(User).filter(User.telegram_id == str(user.id)).first()
+            db_user = db.query(User).filter(User.telegram_id == user.id).first()
             if db_user:
                 keyboard = get_role_keyboard(db_user.role)
                 await update.message.reply_text(
@@ -169,7 +169,7 @@ async def add_product_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def show_products(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Show available products to buyer"""
     with SessionLocal() as db:
-        user = db.query(User).filter(User.telegram_id == str(update.effective_user.id)).first()
+            user = db.query(User).filter(User.telegram_id == update.effective_user.id).first()
         products = db.query(Product).filter(
             Product.city == user.city,
             Product.is_available == True
@@ -305,7 +305,7 @@ def setup_handlers(client):
         """Handle /start command"""
         sender = await event.get_sender()
         with SessionLocal() as db:
-            user = db.query(User).filter(User.telegram_id == str(sender.id)).first()
+            user = db.query(User).filter(User.telegram_id == sender.id).first()
             if user:
                 keyboard = get_role_keyboard(user.role)
                 await event.respond(
@@ -364,12 +364,12 @@ from typing import Dict, List, Optional
 from datetime import datetime
 from core.models import User, Order, Product
 from sqlalchemy.orm import Session
-from config.security import encrypt_sensitive_data
+from src.config.security import encrypt_sensitive_data
 from src.bot.common.keyboards import DialogKeyboards, BalanceKeyboards, SupportKeyboards  # Add imports
 
 def get_user_role(db: Session, telegram_id: int) -> Optional[str]:
     """Get user role from database"""
-    user = db.query(User).filter(User.telegram_id == str(telegram_id)).first()
+    user = db.query(User).filter(User.telegram_id == telegram_id).first()
     return user.role if user else None
 
 def format_product_info(product: Product) -> str:
