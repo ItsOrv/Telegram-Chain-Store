@@ -77,7 +77,7 @@ class UserHandler:
                 log_admin_action(user_id, "ACCESS_USER_MANAGEMENT")
                 
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     if user.role != UserRole.ADMIN:
                         logger.warning(f"Unauthorized user management access from {user_id}")
                         log_admin_action(user_id, "UNAUTHORIZED_USER_MANAGEMENT")
@@ -155,7 +155,7 @@ class UserHandler:
                 
                 with SessionLocal() as db:
                     # Check if admin
-                    admin = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    admin = db.query(User).filter(User.telegram_id == user_id).first()
                     if admin.role != UserRole.ADMIN:
                         logger.warning(f"Non-admin user {user_id} attempting user action")
                         log_admin_action(user_id, "UNAUTHORIZED_ADMIN_ACTION")
@@ -163,7 +163,7 @@ class UserHandler:
                         return
 
                     # Get target user
-                    target_user = db.query(User).filter(User.telegram_id == str(target_id)).first()
+                    target_user = db.query(User).filter(User.telegram_id == target_id).first()
                     if not target_user:
                         logger.warning(f"Target user {target_id} not found")
                         log_admin_action(user_id, "USER_NOT_FOUND", target_id)
