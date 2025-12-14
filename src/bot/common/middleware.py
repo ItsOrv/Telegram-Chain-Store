@@ -174,7 +174,7 @@ def require_location(func: Callable[..., Any]):
     async def wrapped(event, *args, **kwargs):
         user_id = event.sender_id
         with SessionLocal() as db:
-            user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+            user = db.query(User).filter(User.telegram_id == user_id).first()
             if not (user and user.cities):
                 logger.info(f"User {user_id} needs to set location before accessing {func.__name__}")
                 log_user_action(user_id, "LOCATION_REQUIRED", {
