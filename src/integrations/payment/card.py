@@ -70,7 +70,7 @@ class PaymentManager:
 from typing import Optional
 from datetime import datetime
 from core.models import Payment, PaymentMethod
-from config.settings import settings
+from src.config.settings import settings
 import logging
 
 logger = logging.getLogger(__name__)
