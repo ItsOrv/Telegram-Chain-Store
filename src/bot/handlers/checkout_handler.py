@@ -27,7 +27,7 @@ class CheckoutHandler:
             try:
                 user_id = event.sender_id
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     if not user:
                         await event.answer(Messages.UNAUTHORIZED, alert=True)
                         return
@@ -76,7 +76,7 @@ class CheckoutHandler:
                     return
 
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     if not user:
                         return
 
@@ -142,7 +142,7 @@ class CheckoutHandler:
                     return
 
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     total_amount = Decimal(str(state["total_amount"]))
 
                     # نمایش گزینه‌های پرداخت
