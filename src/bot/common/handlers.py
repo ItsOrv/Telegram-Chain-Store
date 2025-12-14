@@ -61,7 +61,7 @@ def setup_handlers(client: TelegramClient):
             log_user_action(user_id, "START_COMMAND")
             
             with SessionLocal() as db:
-                user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                user = db.query(User).filter(User.telegram_id == user_id).first()
                 
                 # Check if this is the head admin
                 is_head_admin = str(user_id) == str(settings.HEAD_ADMIN_ID)
@@ -117,7 +117,7 @@ def setup_handlers(client: TelegramClient):
                     log_user_action(user_id, "NEW_USER_REGISTRATION")
                     
                     new_user = User(
-                        telegram_id=str(user_id),
+                        telegram_id=user_id,
                         username=event.sender.username,
                         role=UserRole.ADMIN if is_head_admin else UserRole.CUSTOMER,
                         status='ACTIVE',
@@ -165,7 +165,7 @@ def setup_handlers(client: TelegramClient):
         log_user_action(user_id, "ADD_PRODUCT_COMMAND")
         
         with SessionLocal() as db:
-            user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+            user = db.query(User).filter(User.telegram_id == user_id).first()
             if not user or user.role != UserRole.SELLER:
                 logger.warning(f"Unauthorized add_product attempt by user {user_id}")
                 log_user_action(user_id, "UNAUTHORIZED_ADD_PRODUCT")
@@ -186,7 +186,7 @@ def setup_handlers(client: TelegramClient):
         log_user_action(user_id, "VIEW_ORDERS_COMMAND")
         
         with SessionLocal() as db:
-            user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+            user = db.query(User).filter(User.telegram_id == user_id).first()
             if not user:
                 logger.warning(f"Unauthorized view_orders attempt by user {user_id}")
                 log_user_action(user_id, "UNAUTHORIZED_VIEW_ORDERS")
@@ -219,7 +219,7 @@ def setup_handlers(client: TelegramClient):
         logger.info(f"Callback query from user {user_id}: {data}")
         
         with SessionLocal() as db:
-            user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+            user = db.query(User).filter(User.telegram_id == user_id).first()
             if not user:
                 logger.warning(f"Unauthorized callback from user {user_id}")
                 log_user_action(user_id, "UNAUTHORIZED_CALLBACK")
@@ -285,7 +285,7 @@ def setup_handlers(client: TelegramClient):
             log_ui_event(user_id, "NAVIGATION", "main_menu", {"action": "back_to_main"})
             
             with SessionLocal() as db:
-                user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                user = db.query(User).filter(User.telegram_id == user_id).first()
                 if user:
                     buttons = RoleKeyboard.get_keyboard(user.role.lower())
                     await event.edit(
