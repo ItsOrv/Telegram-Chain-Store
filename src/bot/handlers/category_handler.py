@@ -47,7 +47,7 @@ class CategoryHandler:
             user_id = event.sender_id
             
             with SessionLocal() as db:
-                user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                user = db.query(User).filter(User.telegram_id == user_id).first()
                 if user.role != UserRole.ADMIN:
                     if hasattr(event, 'answer'):
                         await event.answer(Messages.UNAUTHORIZED, alert=True)
@@ -171,7 +171,7 @@ class CategoryHandler:
             try:
                 user_id = event.sender_id
                 with SessionLocal() as db:
-                    user = db.query(User).filter(User.telegram_id == str(user_id)).first()
+                    user = db.query(User).filter(User.telegram_id == user_id).first()
                     if user:
                         await event.edit(
                             Messages.WELCOME_BACK.format(
